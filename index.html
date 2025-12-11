@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎯 Wer überlebt? - Das Grammatik-Duell</title>
+    <title>🎯 Wer überlebt? - Live Battle</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -18,18 +18,19 @@
         
         h1 {
             text-align: center;
-            font-size: 1.6em;
+            font-size: 1.5em;
             margin-bottom: 15px;
             text-shadow: 0 0 20px rgba(255,215,0,0.5);
         }
         
+        /* Login Screen */
         #login-screen {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 85vh;
-            gap: 25px;
+            gap: 20px;
         }
         
         .logo { font-size: 4em; animation: pulse 2s infinite; }
@@ -39,7 +40,7 @@
             50% { transform: scale(1.1); }
         }
         
-        #login-screen h2 { font-size: 1.5em; color: #ffd700; }
+        #login-screen h2 { font-size: 1.3em; color: #ffd700; text-align: center; }
         
         #login-screen input {
             font-size: 1.2em;
@@ -54,9 +55,11 @@
         
         #login-screen input::placeholder { color: rgba(255,255,255,0.5); }
         
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        
         #login-screen button {
-            font-size: 1.3em;
-            padding: 15px 50px;
+            font-size: 1.1em;
+            padding: 15px 30px;
             border: none;
             border-radius: 30px;
             background: linear-gradient(135deg, #ffd700, #ff8c00);
@@ -71,31 +74,101 @@
             box-shadow: 0 5px 30px rgba(255,215,0,0.5);
         }
         
+        #login-screen button.secondary {
+            background: transparent;
+            border: 2px solid #ffd700;
+            color: #ffd700;
+        }
+        
+        /* Lobby */
+        #lobby-screen { display: none; text-align: center; }
+        
+        .lobby-box {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        
+        .lobby-box h2 { color: #ffd700; margin-bottom: 20px; }
+        
+        .waiting-players {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .waiting-player {
+            padding: 10px 20px;
+            background: rgba(255,215,0,0.2);
+            border-radius: 25px;
+            border: 1px solid rgba(255,215,0,0.5);
+        }
+        
+        .start-game-btn {
+            font-size: 1.3em;
+            padding: 15px 50px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        .start-game-btn:hover { transform: scale(1.05); }
+        .start-game-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* Game Screen */
         #game-screen { display: none; }
         
         .game-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding: 15px;
+            margin-bottom: 15px;
+            padding: 12px 15px;
             background: rgba(255,255,255,0.1);
             border-radius: 15px;
         }
         
-        .player-info { display: flex; align-items: center; gap: 15px; }
-        .player-name { font-weight: bold; color: #ffd700; }
-        .lives { font-size: 1.5em; letter-spacing: 3px; }
-        .progress-info { text-align: right; }
-        .question-num { font-size: 1.1em; color: #ffd700; }
-        .survivors { font-size: 0.9em; color: #00cec9; }
+        .player-info { display: flex; align-items: center; gap: 10px; }
+        .player-name { font-weight: bold; color: #ffd700; font-size: 0.95em; }
+        .lives { font-size: 1.3em; letter-spacing: 2px; }
         
+        .timer-box {
+            text-align: center;
+        }
+        
+        .timer {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #00cec9;
+            text-shadow: 0 0 20px rgba(0,206,201,0.5);
+        }
+        
+        .timer.warning { color: #fdcb6e; }
+        .timer.danger { color: #e74c3c; animation: timerPulse 0.5s infinite; }
+        
+        @keyframes timerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .progress-info { text-align: right; }
+        .question-num { font-size: 1em; color: #ffd700; }
+        .survivors { font-size: 0.85em; color: #00cec9; }
+        
+        /* Quiz Section */
         .quiz-section {
             background: rgba(255,255,255,0.05);
             border: 2px solid rgba(255,215,0,0.3);
             border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
         }
         
         .category-badge {
@@ -105,43 +178,35 @@
             border-radius: 20px;
             font-size: 0.85em;
             color: #ffd700;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
-        .question { font-size: 1.4em; margin-bottom: 25px; line-height: 1.5; }
+        .question { font-size: 1.3em; margin-bottom: 20px; line-height: 1.4; }
         
-        .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         
         @media (max-width: 600px) { .answers { grid-template-columns: 1fr; } }
         
         .answer-btn {
-            padding: 18px 20px;
-            font-size: 1.1em;
+            padding: 15px 18px;
+            font-size: 1em;
             border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 15px;
+            border-radius: 12px;
             background: rgba(255,255,255,0.05);
             color: white;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             text-align: left;
         }
         
-        .answer-btn:hover:not(:disabled) {
+        .answer-btn:hover:not(:disabled):not(.selected) {
             background: rgba(255,215,0,0.2);
             border-color: #ffd700;
-            transform: translateX(5px);
         }
         
-        .answer-btn .letter {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            line-height: 30px;
-            text-align: center;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            margin-right: 12px;
-            font-weight: bold;
+        .answer-btn.selected {
+            background: rgba(100,100,255,0.3);
+            border-color: #6c5ce7;
         }
         
         .answer-btn.correct {
@@ -152,61 +217,74 @@
         .answer-btn.wrong {
             background: rgba(214,48,49,0.5);
             border-color: #d63031;
-            animation: shake 0.5s;
         }
         
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
+        .answer-btn:disabled { cursor: not-allowed; }
         
-        .answer-btn:disabled { cursor: not-allowed; opacity: 0.7; }
-        
-        .feedback-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
-        
-        .feedback-box {
+        .answer-btn .letter {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
             text-align: center;
-            padding: 40px;
-            border-radius: 20px;
-            animation: popIn 0.3s;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            margin-right: 10px;
+            font-weight: bold;
+            font-size: 0.9em;
         }
         
-        @keyframes popIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        .answer-status {
+            text-align: center;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
         }
         
-        .feedback-box.correct { background: linear-gradient(135deg, #00b894, #00cec9); }
-        .feedback-box.wrong { background: linear-gradient(135deg, #d63031, #e17055); }
-        .feedback-box .icon { font-size: 4em; margin-bottom: 15px; }
-        .feedback-box .message { font-size: 1.5em; font-weight: bold; }
+        .answer-status.waiting {
+            display: block;
+            background: rgba(108,92,231,0.3);
+            color: #a29bfe;
+        }
         
+        .answer-status.correct {
+            display: block;
+            background: rgba(0,184,148,0.3);
+            color: #00b894;
+        }
+        
+        .answer-status.wrong {
+            display: block;
+            background: rgba(214,48,49,0.3);
+            color: #ff7675;
+        }
+        
+        .answer-status.timeout {
+            display: block;
+            background: rgba(253,203,110,0.3);
+            color: #fdcb6e;
+        }
+        
+        /* Live Players */
         .live-players {
             background: rgba(255,255,255,0.05);
             border-radius: 15px;
-            padding: 15px;
+            padding: 12px;
         }
         
         .live-players h3 {
-            font-size: 1em;
-            margin-bottom: 12px;
+            font-size: 0.9em;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
         .live-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             background: #e74c3c;
             border-radius: 50%;
             animation: blink 1.5s infinite;
@@ -220,41 +298,43 @@
         .players-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            max-height: 200px;
+            gap: 6px;
+            max-height: 150px;
             overflow-y: auto;
         }
         
         .player-chip {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
+            gap: 5px;
+            padding: 5px 10px;
             background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            font-size: 0.85em;
+            border-radius: 15px;
+            font-size: 0.8em;
         }
         
         .player-chip.dead { opacity: 0.4; text-decoration: line-through; }
         .player-chip.is-me { border: 2px solid #ffd700; background: rgba(255,215,0,0.2); }
-        .player-chip .lives-mini { font-size: 0.9em; }
+        .player-chip.answered { border-color: #6c5ce7; }
         
-        #gameover-screen { display: none; text-align: center; padding: 40px 20px; }
-        #gameover-screen .result-icon { font-size: 5em; margin-bottom: 20px; }
-        #gameover-screen h2 { font-size: 2em; margin-bottom: 10px; }
-        #gameover-screen .result-message { font-size: 1.2em; color: #aaa; margin-bottom: 30px; }
+        /* Game Over */
+        #gameover-screen { display: none; text-align: center; padding: 30px 20px; }
+        #gameover-screen .result-icon { font-size: 4em; margin-bottom: 15px; }
+        #gameover-screen h2 { font-size: 1.8em; margin-bottom: 10px; }
+        #gameover-screen .result-message { font-size: 1.1em; color: #aaa; margin-bottom: 25px; }
         
         .final-stats {
             background: rgba(255,255,255,0.1);
             border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
+            padding: 15px;
+            margin-bottom: 25px;
+            text-align: left;
         }
         
         .stat-row {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
+            padding: 8px 0;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         
@@ -264,36 +344,36 @@
             background: rgba(255,215,0,0.1);
             border: 2px solid rgba(255,215,0,0.3);
             border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
+            padding: 15px;
+            margin-bottom: 25px;
         }
         
-        .winners-list h3 { color: #ffd700; margin-bottom: 15px; }
+        .winners-list h3 { color: #ffd700; margin-bottom: 12px; }
         
         .winner-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
+            padding: 8px 12px;
             background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            margin-bottom: 8px;
+            border-radius: 8px;
+            margin-bottom: 6px;
         }
         
         .play-again-btn {
-            font-size: 1.2em;
-            padding: 15px 40px;
+            font-size: 1.1em;
+            padding: 12px 35px;
             border: none;
-            border-radius: 30px;
+            border-radius: 25px;
             background: linear-gradient(135deg, #ffd700, #ff8c00);
             color: #1a1a2e;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s;
         }
         
         .play-again-btn:hover { transform: scale(1.05); }
         
+        /* Eliminated Overlay */
         #eliminated-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -303,32 +383,30 @@
             align-items: center;
             z-index: 200;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
         }
         
-        #eliminated-overlay .skull { font-size: 6em; }
-        #eliminated-overlay h2 { font-size: 2em; color: #d63031; }
+        #eliminated-overlay .skull { font-size: 5em; }
+        #eliminated-overlay h2 { font-size: 1.8em; color: #d63031; }
         #eliminated-overlay p { color: #aaa; }
         
         .watch-btn {
-            padding: 12px 30px;
+            padding: 12px 25px;
             border: 2px solid #ffd700;
             background: transparent;
             color: #ffd700;
-            border-radius: 25px;
-            font-size: 1em;
+            border-radius: 20px;
             cursor: pointer;
         }
         
-        .watch-btn:hover { background: rgba(255,215,0,0.2); }
-        
+        /* Connection Status */
         .connection-status {
             position: fixed;
             top: 10px;
             right: 10px;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 0.8em;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
             background: rgba(0,0,0,0.5);
         }
         
@@ -340,28 +418,47 @@
     <div class="connection-status" id="connection-status">Verbinde...</div>
     
     <div class="container">
-        <h1>🎯 Wer überlebt? - Das Grammatik-Duell</h1>
+        <h1>🎯 Wer überlebt? - Live Battle</h1>
         
+        <!-- Login Screen -->
         <div id="login-screen">
             <div class="logo">🎯</div>
-            <h2>50 Fragen • 3 Leben • Wer überlebt?</h2>
+            <h2>50 Fragen • 3 Leben • 15 Sekunden<br>Wer überlebt?</h2>
             <input type="text" id="player-name-input" placeholder="Dein Name" maxlength="15">
-            <button id="start-btn">🚀 Ich bin bereit!</button>
-            <p style="color: #888; font-size: 0.9em; margin-top: 20px;">
-                Themen: Reflexivverben • Verben mit Präpositionen<br>
-                Modalverben Vergangenheit • Akkusativ/Dativ
+            <div class="btn-group">
+                <button id="create-game-btn">🎮 Neues Spiel</button>
+                <button id="join-game-btn" class="secondary">🚪 Beitreten</button>
+            </div>
+            <p style="color: #888; font-size: 0.85em; margin-top: 15px;">
+                Reflexivverben • Verben mit Präpositionen<br>
+                Modalverben Präteritum • Akkusativ/Dativ
             </p>
         </div>
         
+        <!-- Lobby Screen -->
+        <div id="lobby-screen">
+            <div class="lobby-box">
+                <h2>⏳ Warteraum</h2>
+                <p style="color: #aaa; margin-bottom: 15px;">Spieler warten auf Start...</p>
+                <div class="waiting-players" id="waiting-players"></div>
+                <button class="start-game-btn" id="start-game-btn">▶️ Spiel starten</button>
+                <p style="color: #888; font-size: 0.85em; margin-top: 15px;" id="host-info"></p>
+            </div>
+        </div>
+        
+        <!-- Game Screen -->
         <div id="game-screen">
             <div class="game-header">
                 <div class="player-info">
                     <span class="player-name" id="display-name"></span>
                     <span class="lives" id="display-lives">❤️❤️❤️</span>
                 </div>
+                <div class="timer-box">
+                    <div class="timer" id="timer">15</div>
+                </div>
                 <div class="progress-info">
                     <div class="question-num" id="question-num">Frage 1/50</div>
-                    <div class="survivors" id="survivors">👥 0 noch dabei</div>
+                    <div class="survivors" id="survivors">👥 0 dabei</div>
                 </div>
             </div>
             
@@ -369,6 +466,7 @@
                 <div class="category-badge" id="category"></div>
                 <div class="question" id="question"></div>
                 <div class="answers" id="answers"></div>
+                <div class="answer-status" id="answer-status"></div>
             </div>
             
             <div class="live-players">
@@ -377,6 +475,7 @@
             </div>
         </div>
         
+        <!-- Game Over Screen -->
         <div id="gameover-screen">
             <div class="result-icon" id="result-icon">🏆</div>
             <h2 id="result-title">Spiel beendet!</h2>
@@ -397,46 +496,34 @@
                 </div>
             </div>
             
-            <div class="winners-list" id="winners-list">
+            <div class="winners-list">
                 <h3>🏆 Überlebende</h3>
                 <div id="winners-content"></div>
             </div>
             
-            <button class="play-again-btn" id="play-again-btn">🔄 Nochmal spielen</button>
+            <button class="play-again-btn" id="play-again-btn">🔄 Neues Spiel</button>
         </div>
         
+        <!-- Eliminated Overlay -->
         <div id="eliminated-overlay">
             <div class="skull">💀</div>
             <h2>Ausgeschieden!</h2>
             <p>Du hast alle 3 Leben verloren.</p>
-            <button class="watch-btn" id="watch-btn">👀 Zuschauen</button>
-        </div>
-        
-        <div class="feedback-overlay" id="feedback-overlay">
-            <div class="feedback-box" id="feedback-box">
-                <div class="icon" id="feedback-icon"></div>
-                <div class="message" id="feedback-message"></div>
-            </div>
+            <button class="watch-btn" id="watch-btn">👀 Weiter zuschauen</button>
         </div>
     </div>
 
-    <!-- Firebase SDK - WICHTIG: Reihenfolge beachten! -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
     <script>
-    // Warte bis alles geladen ist
     document.addEventListener('DOMContentLoaded', function() {
         
-        // Prüfe ob Firebase verfügbar ist
         if (typeof firebase === 'undefined') {
-            document.getElementById("connection-status").textContent = "❌ Firebase fehlt";
-            document.getElementById("connection-status").className = "connection-status disconnected";
-            alert("Firebase konnte nicht geladen werden. Bitte Seite neu laden.");
+            alert("Firebase konnte nicht geladen werden.");
             return;
         }
         
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",
             authDomain: "lern-deutsch-arash.firebaseapp.com",
@@ -447,12 +534,11 @@
             appId: "1:845503292114:web:f76ab5fcde1e978d00c30b"
         };
         
-        // Firebase initialisieren
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         
-        // 50 Fragen
-        const questions = [
+        // Alle 50 Fragen (feste Reihenfolge für Sync)
+        const allQuestions = [
             // REFLEXIVVERBEN (12)
             { category: "Reflexivverben", q: "Ich ___ mich jeden Morgen.", answers: ["wasche", "waschst", "waschen", "wäscht"], correct: 0 },
             { category: "Reflexivverben", q: "Er ___ sich auf die Prüfung vor.", answers: ["bereitet", "bereite", "bereitest", "bereiten"], correct: 0 },
@@ -468,34 +554,34 @@
             { category: "Reflexivverben", q: "Setzt ___ bitte hin!", answers: ["euch", "sich", "uns", "dich"], correct: 0 },
             
             // VERBEN MIT PRÄPOSITIONEN (13)
-            { category: "Verben mit Präpositionen", q: "Ich warte ___ den Bus.", answers: ["auf", "für", "an", "über"], correct: 0 },
-            { category: "Verben mit Präpositionen", q: "Er denkt oft ___ seine Familie.", answers: ["an", "auf", "über", "für"], correct: 0 },
-            { category: "Verben mit Präpositionen", q: "Sie freut sich ___ das Wochenende.", answers: ["auf", "über", "für", "an"], correct: 0 },
-            { category: "Verben mit Präpositionen", q: "Wir sprechen ___ das Problem.", answers: ["über", "von", "auf", "für"], correct: 0 },
-            { category: "Verben mit Präpositionen", q: "Ich interessiere mich ___ Sport.", answers: ["für", "an", "auf", "über"], correct: 0 },
-            { category: "Verben mit Präpositionen", q: "Er bittet mich ___ Hilfe.", answers: ["um", "für", "auf", "nach"], correct: 0 },
-            { category: "Verben mit Präpositionen", q: "Sie ärgert sich ___ den Fehler.", answers: ["über", "auf", "für", "an"], correct: 0 },
-            { category: "Verben mit Präpositionen", q: "Ich träume ___ einem Urlaub.", answers: ["von", "über", "an", "auf"], correct: 0 },
-            { category: "Verben mit Präpositionen", q: "Er kümmert sich ___ die Kinder.", answers: ["um", "für", "auf", "über"], correct: 0 },
-            { category: "Verben mit Präpositionen", q: "Wir haben ___ dem Chef gesprochen.", answers: ["mit", "zu", "bei", "von"], correct: 0 },
-            { category: "Verben mit Präpositionen", q: "Sie bedankt sich ___ das Geschenk.", answers: ["für", "über", "auf", "um"], correct: 0 },
-            { category: "Verben mit Präpositionen", q: "Ich habe Angst ___ Spinnen.", answers: ["vor", "von", "für", "über"], correct: 0 },
-            { category: "Verben mit Präpositionen", q: "Er verlässt sich ___ seine Freunde.", answers: ["auf", "an", "für", "mit"], correct: 0 },
+            { category: "Verben + Präposition", q: "Ich warte ___ den Bus.", answers: ["auf", "für", "an", "über"], correct: 0 },
+            { category: "Verben + Präposition", q: "Er denkt oft ___ seine Familie.", answers: ["an", "auf", "über", "für"], correct: 0 },
+            { category: "Verben + Präposition", q: "Sie freut sich ___ das Wochenende.", answers: ["auf", "über", "für", "an"], correct: 0 },
+            { category: "Verben + Präposition", q: "Wir sprechen ___ das Problem.", answers: ["über", "von", "auf", "für"], correct: 0 },
+            { category: "Verben + Präposition", q: "Ich interessiere mich ___ Sport.", answers: ["für", "an", "auf", "über"], correct: 0 },
+            { category: "Verben + Präposition", q: "Er bittet mich ___ Hilfe.", answers: ["um", "für", "auf", "nach"], correct: 0 },
+            { category: "Verben + Präposition", q: "Sie ärgert sich ___ den Fehler.", answers: ["über", "auf", "für", "an"], correct: 0 },
+            { category: "Verben + Präposition", q: "Ich träume ___ einem Urlaub.", answers: ["von", "über", "an", "auf"], correct: 0 },
+            { category: "Verben + Präposition", q: "Er kümmert sich ___ die Kinder.", answers: ["um", "für", "auf", "über"], correct: 0 },
+            { category: "Verben + Präposition", q: "Wir haben ___ dem Chef gesprochen.", answers: ["mit", "zu", "bei", "von"], correct: 0 },
+            { category: "Verben + Präposition", q: "Sie bedankt sich ___ das Geschenk.", answers: ["für", "über", "auf", "um"], correct: 0 },
+            { category: "Verben + Präposition", q: "Ich habe Angst ___ Spinnen.", answers: ["vor", "von", "für", "über"], correct: 0 },
+            { category: "Verben + Präposition", q: "Er verlässt sich ___ seine Freunde.", answers: ["auf", "an", "für", "mit"], correct: 0 },
             
-            // MODALVERBEN VERGANGENHEIT (13)
-            { category: "Modalverben Präteritum", q: "Ich ___ gestern nicht kommen.", answers: ["konnte", "könnte", "kann", "gekonnt"], correct: 0 },
-            { category: "Modalverben Präteritum", q: "Er ___ früher aufstehen.", answers: ["musste", "müsste", "muss", "gemusst"], correct: 0 },
-            { category: "Modalverben Präteritum", q: "Sie ___ als Kind nicht schwimmen.", answers: ["durfte", "dürfte", "darf", "gedurft"], correct: 0 },
-            { category: "Modalverben Präteritum", q: "Wir ___ lange warten.", answers: ["mussten", "müssen", "müssten", "gemusst"], correct: 0 },
-            { category: "Modalverben Präteritum", q: "Ich ___ das nicht verstehen.", answers: ["konnte", "kann", "könnte", "gekonnt"], correct: 0 },
-            { category: "Modalverben Präteritum", q: "Er ___ immer Fußball spielen.", answers: ["wollte", "will", "wollten", "gewollt"], correct: 0 },
-            { category: "Modalverben Präteritum", q: "Du ___ das nicht tun!", answers: ["solltest", "sollst", "sollte", "gesollt"], correct: 0 },
-            { category: "Modalverben Präteritum", q: "Sie (Pl.) ___ nicht rauchen.", answers: ["durften", "dürfen", "dürften", "gedurft"], correct: 0 },
-            { category: "Modalverben Präteritum", q: "Als Kind ___ ich kein Gemüse.", answers: ["mochte", "mag", "möchte", "gemocht"], correct: 0 },
-            { category: "Modalverben Präteritum", q: "Wir ___ früher viel reisen.", answers: ["konnten", "können", "könnten", "gekonnt"], correct: 0 },
-            { category: "Modalverben Präteritum", q: "Er ___ den Brief schreiben.", answers: ["sollte", "soll", "sollten", "gesollt"], correct: 0 },
-            { category: "Modalverben Präteritum", q: "Sie ___ unbedingt diesen Film sehen.", answers: ["wollte", "will", "wollten", "gewollt"], correct: 0 },
-            { category: "Modalverben Präteritum", q: "Ich ___ leider nicht helfen.", answers: ["konnte", "kann", "könnte", "gekonnt"], correct: 0 },
+            // MODALVERBEN PRÄTERITUM (13)
+            { category: "Modalverben Prät.", q: "Ich ___ gestern nicht kommen.", answers: ["konnte", "könnte", "kann", "gekonnt"], correct: 0 },
+            { category: "Modalverben Prät.", q: "Er ___ früher aufstehen.", answers: ["musste", "müsste", "muss", "gemusst"], correct: 0 },
+            { category: "Modalverben Prät.", q: "Sie ___ als Kind nicht schwimmen.", answers: ["durfte", "dürfte", "darf", "gedurft"], correct: 0 },
+            { category: "Modalverben Prät.", q: "Wir ___ lange warten.", answers: ["mussten", "müssen", "müssten", "gemusst"], correct: 0 },
+            { category: "Modalverben Prät.", q: "Ich ___ das nicht verstehen.", answers: ["konnte", "kann", "könnte", "gekonnt"], correct: 0 },
+            { category: "Modalverben Prät.", q: "Er ___ immer Fußball spielen.", answers: ["wollte", "will", "wollten", "gewollt"], correct: 0 },
+            { category: "Modalverben Prät.", q: "Du ___ das nicht tun!", answers: ["solltest", "sollst", "sollte", "gesollt"], correct: 0 },
+            { category: "Modalverben Prät.", q: "Sie (Pl.) ___ nicht rauchen.", answers: ["durften", "dürfen", "dürften", "gedurft"], correct: 0 },
+            { category: "Modalverben Prät.", q: "Als Kind ___ ich kein Gemüse.", answers: ["mochte", "mag", "möchte", "gemocht"], correct: 0 },
+            { category: "Modalverben Prät.", q: "Wir ___ früher viel reisen.", answers: ["konnten", "können", "könnten", "gekonnt"], correct: 0 },
+            { category: "Modalverben Prät.", q: "Er ___ den Brief schreiben.", answers: ["sollte", "soll", "sollten", "gesollt"], correct: 0 },
+            { category: "Modalverben Prät.", q: "Sie ___ unbedingt den Film sehen.", answers: ["wollte", "will", "wollten", "gewollt"], correct: 0 },
+            { category: "Modalverben Prät.", q: "Ich ___ leider nicht helfen.", answers: ["konnte", "kann", "könnte", "gekonnt"], correct: 0 },
             
             // AKKUSATIV/DATIV (12)
             { category: "Akkusativ/Dativ", q: "Ich schenke ___ ein Buch.", answers: ["dir", "dich", "du", "deiner"], correct: 0 },
@@ -512,15 +598,25 @@
             { category: "Akkusativ/Dativ", q: "Sie hat ___ das Buch empfohlen.", answers: ["uns", "wir", "unser", "unsere"], correct: 0 }
         ];
         
+        // Konstanten
+        const QUESTION_TIME = 15; // Sekunden pro Frage
+        const TOTAL_QUESTIONS = 50;
+        const GAME_ID = "livebattle"; // Fester Game-Raum
+        
         // Spielstatus
         let playerName = "";
         let playerId = "";
         let lives = 3;
-        let currentQuestion = 0;
         let correctAnswers = 0;
         let wrongAnswers = 0;
-        let shuffledQuestions = [];
+        let isHost = false;
         let isWatching = false;
+        let currentQuestionIndex = -1;
+        let hasAnswered = false;
+        let selectedAnswer = null;
+        let timerInterval = null;
+        let gameRef = null;
+        let playersRef = null;
         
         // Verbindungsstatus
         database.ref(".info/connected").on("value", (snap) => {
@@ -535,34 +631,116 @@
         });
         
         // Event Listeners
-        document.getElementById("start-btn").addEventListener("click", startGame);
-        document.getElementById("play-again-btn").addEventListener("click", playAgain);
-        document.getElementById("watch-btn").addEventListener("click", watchGame);
+        document.getElementById("create-game-btn").addEventListener("click", () => joinGame(true));
+        document.getElementById("join-game-btn").addEventListener("click", () => joinGame(false));
+        document.getElementById("start-game-btn").addEventListener("click", startGameAsHost);
+        document.getElementById("play-again-btn").addEventListener("click", resetToLobby);
+        document.getElementById("watch-btn").addEventListener("click", () => {
+            isWatching = true;
+            document.getElementById("eliminated-overlay").style.display = "none";
+        });
         document.getElementById("player-name-input").addEventListener("keypress", (e) => {
-            if (e.key === "Enter") startGame();
+            if (e.key === "Enter") joinGame(false);
         });
         
-        function setupPlayersListener() {
-            database.ref("millionaer").on("value", (snapshot) => {
+        function joinGame(asHost) {
+            playerName = document.getElementById("player-name-input").value.trim();
+            if (!playerName) {
+                alert("Bitte gib deinen Namen ein!");
+                return;
+            }
+            
+            playerId = "p_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5);
+            isHost = asHost;
+            
+            gameRef = database.ref("games/" + GAME_ID);
+            playersRef = database.ref("games/" + GAME_ID + "/players");
+            
+            // Spieler hinzufügen
+            playersRef.child(playerId).set({
+                name: playerName,
+                lives: 3,
+                answered: false,
+                lastAnswer: null,
+                isHost: isHost
+            });
+            
+            // Bei Disconnect entfernen
+            playersRef.child(playerId).onDisconnect().remove();
+            
+            // Wenn Host: Spiel zurücksetzen
+            if (isHost) {
+                gameRef.update({
+                    status: "lobby",
+                    currentQuestion: -1,
+                    questionStartTime: null
+                });
+            }
+            
+            // UI
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("lobby-screen").style.display = "block";
+            
+            // Listeners starten
+            setupGameListeners();
+        }
+        
+        function setupGameListeners() {
+            // Spieler-Updates
+            playersRef.on("value", (snapshot) => {
                 const players = [];
                 snapshot.forEach((child) => {
                     players.push({ id: child.key, ...child.val() });
                 });
-                updatePlayersUI(players);
+                
+                updateLobbyPlayers(players);
+                updateGamePlayers(players);
+            });
+            
+            // Spiel-Status Updates
+            gameRef.on("value", (snapshot) => {
+                const game = snapshot.val();
+                if (!game) return;
+                
+                if (game.status === "playing") {
+                    document.getElementById("lobby-screen").style.display = "none";
+                    document.getElementById("game-screen").style.display = "block";
+                    
+                    if (game.currentQuestion !== currentQuestionIndex) {
+                        currentQuestionIndex = game.currentQuestion;
+                        showSyncedQuestion(game);
+                    }
+                } else if (game.status === "finished") {
+                    endGame();
+                }
             });
         }
         
-        function updatePlayersUI(players) {
+        function updateLobbyPlayers(players) {
+            const container = document.getElementById("waiting-players");
+            container.innerHTML = players.map(p => 
+                `<div class="waiting-player">${p.name} ${p.isHost ? '👑' : ''}</div>`
+            ).join("");
+            
+            const hostInfo = document.getElementById("host-info");
+            const host = players.find(p => p.isHost);
+            if (host && host.id !== playerId) {
+                hostInfo.textContent = `${host.name} ist der Spielleiter`;
+                document.getElementById("start-game-btn").style.display = "none";
+            } else if (isHost) {
+                hostInfo.textContent = "Du bist der Spielleiter";
+                document.getElementById("start-game-btn").style.display = "block";
+                document.getElementById("start-game-btn").disabled = players.length < 1;
+            }
+        }
+        
+        function updateGamePlayers(players) {
             const grid = document.getElementById("players-grid");
             const survivors = players.filter(p => p.lives > 0);
             
-            document.getElementById("survivors").textContent = `👥 ${survivors.length} noch dabei`;
+            document.getElementById("survivors").textContent = `👥 ${survivors.length} dabei`;
             
-            players.sort((a, b) => {
-                if (a.lives === 0 && b.lives > 0) return 1;
-                if (a.lives > 0 && b.lives === 0) return -1;
-                return b.lives - a.lives;
-            });
+            players.sort((a, b) => b.lives - a.lives);
             
             grid.innerHTML = "";
             players.forEach((player) => {
@@ -570,152 +748,222 @@
                 chip.className = "player-chip";
                 if (player.lives === 0) chip.classList.add("dead");
                 if (player.id === playerId) chip.classList.add("is-me");
+                if (player.answered) chip.classList.add("answered");
                 
                 const livesDisplay = player.lives > 0 
-                    ? "❤️".repeat(player.lives) + "🖤".repeat(3 - player.lives)
+                    ? "❤️".repeat(player.lives) 
                     : "💀";
                 
-                chip.innerHTML = `<span>${player.name}</span><span class="lives-mini">${livesDisplay}</span>`;
+                chip.innerHTML = `<span>${player.name}</span><span>${livesDisplay}</span>`;
                 grid.appendChild(chip);
             });
         }
         
-        function startGame() {
-            playerName = document.getElementById("player-name-input").value.trim();
+        function startGameAsHost() {
+            if (!isHost) return;
             
-            if (!playerName) {
-                alert("Bitte gib deinen Namen ein!");
-                return;
-            }
-            
-            playerId = "player_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
-            
-            database.ref("millionaer/" + playerId).set({
-                name: playerName,
-                lives: 3,
-                question: 0,
-                timestamp: Date.now()
+            gameRef.update({
+                status: "playing",
+                currentQuestion: 0,
+                questionStartTime: Date.now()
             });
-            
-            shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
-            
-            document.getElementById("login-screen").style.display = "none";
-            document.getElementById("game-screen").style.display = "block";
-            document.getElementById("display-name").textContent = playerName;
-            
-            setupPlayersListener();
-            showQuestion();
         }
         
-        function showQuestion() {
-            if (currentQuestion >= shuffledQuestions.length) {
-                endGame(true);
+        function showSyncedQuestion(game) {
+            if (currentQuestionIndex >= TOTAL_QUESTIONS) {
+                gameRef.update({ status: "finished" });
                 return;
             }
             
-            const q = shuffledQuestions[currentQuestion];
+            // Reset
+            hasAnswered = false;
+            selectedAnswer = null;
             
-            document.getElementById("question-num").textContent = `Frage ${currentQuestion + 1}/${shuffledQuestions.length}`;
+            // Reset answered status für diesen Spieler
+            playersRef.child(playerId).update({ answered: false, lastAnswer: null });
+            
+            const q = allQuestions[currentQuestionIndex];
+            
+            document.getElementById("question-num").textContent = `Frage ${currentQuestionIndex + 1}/${TOTAL_QUESTIONS}`;
             document.getElementById("category").textContent = q.category;
             document.getElementById("question").textContent = q.q;
+            document.getElementById("display-name").textContent = playerName;
+            updateLivesDisplay();
             
+            // Antworten (NICHT mischen - alle sehen dieselbe Reihenfolge)
             const answersDiv = document.getElementById("answers");
             answersDiv.innerHTML = "";
             
             const letters = ["A", "B", "C", "D"];
-            const shuffledAnswers = q.answers.map((a, i) => ({text: a, originalIndex: i}));
-            shuffledAnswers.sort(() => Math.random() - 0.5);
-            
-            shuffledAnswers.forEach((answer, idx) => {
+            q.answers.forEach((answer, idx) => {
                 const btn = document.createElement("button");
                 btn.className = "answer-btn";
-                btn.innerHTML = `<span class="letter">${letters[idx]}</span>${answer.text}`;
-                btn.addEventListener("click", () => checkAnswer(btn, answer.originalIndex === q.correct));
-                if (isWatching) btn.disabled = true;
+                btn.innerHTML = `<span class="letter">${letters[idx]}</span>${answer}`;
+                btn.dataset.index = idx;
+                btn.addEventListener("click", () => selectAnswer(btn, idx, q.correct));
+                if (isWatching || lives === 0) btn.disabled = true;
                 answersDiv.appendChild(btn);
             });
+            
+            // Status zurücksetzen
+            const statusDiv = document.getElementById("answer-status");
+            statusDiv.className = "answer-status";
+            statusDiv.textContent = "";
+            
+            // Timer starten
+            startTimer(game.questionStartTime);
         }
         
-        function checkAnswer(btn, isCorrect) {
+        function selectAnswer(btn, answerIndex, correctIndex) {
+            if (hasAnswered || lives === 0) return;
+            
+            hasAnswered = true;
+            selectedAnswer = answerIndex;
+            
+            // Visual feedback
+            btn.classList.add("selected");
             document.querySelectorAll(".answer-btn").forEach(b => b.disabled = true);
             
-            const feedbackOverlay = document.getElementById("feedback-overlay");
-            const feedbackBox = document.getElementById("feedback-box");
-            const feedbackIcon = document.getElementById("feedback-icon");
-            const feedbackMessage = document.getElementById("feedback-message");
+            // In Firebase speichern
+            playersRef.child(playerId).update({
+                answered: true,
+                lastAnswer: answerIndex
+            });
             
-            if (isCorrect) {
-                btn.classList.add("correct");
+            // Status anzeigen
+            const statusDiv = document.getElementById("answer-status");
+            statusDiv.className = "answer-status waiting";
+            statusDiv.textContent = "⏳ Warte auf Timer...";
+        }
+        
+        function startTimer(questionStartTime) {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            const timerEl = document.getElementById("timer");
+            
+            function updateTimer() {
+                const elapsed = Math.floor((Date.now() - questionStartTime) / 1000);
+                const remaining = Math.max(0, QUESTION_TIME - elapsed);
+                
+                timerEl.textContent = remaining;
+                timerEl.className = "timer";
+                
+                if (remaining <= 3) {
+                    timerEl.classList.add("danger");
+                } else if (remaining <= 5) {
+                    timerEl.classList.add("warning");
+                }
+                
+                if (remaining === 0) {
+                    clearInterval(timerInterval);
+                    evaluateAnswer();
+                }
+            }
+            
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 100);
+        }
+        
+        function evaluateAnswer() {
+            const q = allQuestions[currentQuestionIndex];
+            const correctIndex = q.correct;
+            
+            // Alle Buttons zeigen
+            document.querySelectorAll(".answer-btn").forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === correctIndex) {
+                    btn.classList.add("correct");
+                }
+            });
+            
+            const statusDiv = document.getElementById("answer-status");
+            
+            if (!hasAnswered) {
+                // Nicht geantwortet = Timeout = Leben verlieren
+                if (lives > 0) {
+                    lives--;
+                    wrongAnswers++;
+                    playersRef.child(playerId).update({ lives: lives });
+                }
+                statusDiv.className = "answer-status timeout";
+                statusDiv.textContent = "⏰ Zeit abgelaufen! -1 Leben";
+            } else if (selectedAnswer === correctIndex) {
                 correctAnswers++;
-                
-                feedbackBox.className = "feedback-box correct";
-                feedbackIcon.textContent = "✅";
-                feedbackMessage.textContent = "Richtig!";
+                statusDiv.className = "answer-status correct";
+                statusDiv.textContent = "✅ Richtig!";
             } else {
-                btn.classList.add("wrong");
+                if (lives > 0) {
+                    lives--;
+                    playersRef.child(playerId).update({ lives: lives });
+                }
                 wrongAnswers++;
-                lives--;
                 
-                const correctAnswer = shuffledQuestions[currentQuestion].answers[shuffledQuestions[currentQuestion].correct];
-                document.querySelectorAll(".answer-btn").forEach(b => {
-                    if (b.textContent.includes(correctAnswer)) {
-                        b.classList.add("correct");
+                // Falsche Antwort markieren
+                document.querySelectorAll(".answer-btn").forEach((btn, idx) => {
+                    if (idx === selectedAnswer) {
+                        btn.classList.add("wrong");
                     }
                 });
                 
-                database.ref("millionaer/" + playerId + "/lives").set(lives);
-                
-                feedbackBox.className = "feedback-box wrong";
-                feedbackIcon.textContent = "❌";
-                feedbackMessage.textContent = lives > 0 ? `Falsch! Noch ${lives} Leben` : "Ausgeschieden!";
+                statusDiv.className = "answer-status wrong";
+                statusDiv.textContent = `❌ Falsch! Noch ${lives} Leben`;
             }
             
             updateLivesDisplay();
-            feedbackOverlay.style.display = "flex";
             
-            setTimeout(() => {
-                feedbackOverlay.style.display = "none";
-                
-                if (lives === 0) {
+            // Check ob ausgeschieden
+            if (lives === 0 && !isWatching) {
+                setTimeout(() => {
                     document.getElementById("eliminated-overlay").style.display = "flex";
-                } else {
-                    currentQuestion++;
-                    database.ref("millionaer/" + playerId + "/question").set(currentQuestion);
-                    showQuestion();
-                }
-            }, 1200);
+                }, 1000);
+            }
+            
+            // Nächste Frage nach 3 Sekunden (nur Host triggered)
+            if (isHost) {
+                setTimeout(() => {
+                    const nextQ = currentQuestionIndex + 1;
+                    if (nextQ >= TOTAL_QUESTIONS) {
+                        gameRef.update({ status: "finished" });
+                    } else {
+                        gameRef.update({
+                            currentQuestion: nextQ,
+                            questionStartTime: Date.now()
+                        });
+                    }
+                }, 3000);
+            }
         }
         
         function updateLivesDisplay() {
-            document.getElementById("display-lives").textContent = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+            const display = lives > 0 
+                ? "❤️".repeat(lives) + "🖤".repeat(3 - lives)
+                : "💀";
+            document.getElementById("display-lives").textContent = display;
         }
         
-        function watchGame() {
-            isWatching = true;
-            document.getElementById("eliminated-overlay").style.display = "none";
-            currentQuestion++;
-            showQuestion();
-        }
-        
-        function endGame(survived) {
+        function endGame() {
+            if (timerInterval) clearInterval(timerInterval);
+            
             document.getElementById("game-screen").style.display = "none";
+            document.getElementById("eliminated-overlay").style.display = "none";
             document.getElementById("gameover-screen").style.display = "block";
             
-            if (survived && lives > 0) {
+            if (lives > 0) {
                 document.getElementById("result-icon").textContent = "🏆";
                 document.getElementById("result-title").textContent = "Du hast überlebt!";
-                document.getElementById("result-message").textContent = "Glückwunsch! Du hast alle 50 Fragen geschafft!";
+                document.getElementById("result-message").textContent = "Glückwunsch!";
             } else {
                 document.getElementById("result-icon").textContent = "💀";
                 document.getElementById("result-title").textContent = "Ausgeschieden!";
-                document.getElementById("result-message").textContent = `Du hast bei Frage ${currentQuestion + 1} alle Leben verloren.`;
+                document.getElementById("result-message").textContent = "Vielleicht nächstes Mal!";
             }
             
             document.getElementById("stat-correct").textContent = correctAnswers;
             document.getElementById("stat-wrong").textContent = wrongAnswers;
             document.getElementById("stat-lives").textContent = lives > 0 ? "❤️".repeat(lives) : "💀";
             
-            database.ref("millionaer").orderByChild("lives").once("value", (snapshot) => {
+            // Gewinner laden
+            playersRef.once("value", (snapshot) => {
                 const winners = [];
                 snapshot.forEach((child) => {
                     const p = child.val();
@@ -729,25 +977,21 @@
             });
         }
         
-        function playAgain() {
+        function resetToLobby() {
+            // Reset lokal
             lives = 3;
-            currentQuestion = 0;
             correctAnswers = 0;
             wrongAnswers = 0;
+            currentQuestionIndex = -1;
+            hasAnswered = false;
             isWatching = false;
             
-            shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
-            
-            database.ref("millionaer/" + playerId).update({ lives: 3, question: 0 });
-            
+            // UI
             document.getElementById("gameover-screen").style.display = "none";
-            document.getElementById("eliminated-overlay").style.display = "none";
-            document.getElementById("game-screen").style.display = "block";
-            updateLivesDisplay();
-            showQuestion();
+            document.getElementById("login-screen").style.display = "block";
         }
         
-    }); // Ende DOMContentLoaded
+    });
     </script>
     
     <script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
