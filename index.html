@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Multiplayer Quiz Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        /* Login Screen */
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            gap: 20px;
+        }
+        
+        #login-screen input {
+            font-size: 1.2em;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 30px;
+            width: 280px;
+            text-align: center;
+            background: rgba(255,255,255,0.9);
+        }
+        
+        #login-screen button {
+            font-size: 1.2em;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        #login-screen button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,206,201,0.4);
+        }
+        
+        /* Game Layout */
+        #game-screen {
+            display: none;
+        }
+        
+        .game-layout {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 20px;
+        }
+        
+        @media (max-width: 700px) {
+            .game-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Quiz Section */
+        .quiz-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 25px;
+        }
+        
+        .player-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .player-name {
+            font-size: 1.1em;
+            color: #00cec9;
+        }
+        
+        .score {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #ffeaa7;
+        }
+        
+        .progress {
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 20px;
+        }
+        
+        .question {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+        
+        .answers {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .answer-btn {
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        
+        .answer-btn:hover:not(:disabled) {
+            background: rgba(255,255,255,0.15);
+            border-color: #00cec9;
+        }
+        
+        .answer-btn.correct {
+            background: rgba(0,184,148,0.4);
+            border-color: #00b894;
+        }
+        
+        .answer-btn.wrong {
+            background: rgba(214,48,49,0.4);
+            border-color: #d63031;
+        }
+        
+        .answer-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background: rgba(0,184,148,0.3);
+            display: block;
+        }
+        
+        .feedback.wrong {
+            background: rgba(214,48,49,0.3);
+            display: block;
+        }
+        
+        /* Leaderboard */
+        .leaderboard {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 20px;
+            height: fit-content;
+        }
+        
+        .leaderboard h2 {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background: #e74c3c;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        
+        .leaderboard-list {
+            list-style: none;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .leaderboard-item.top-1 {
+            background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,193,7,0.2));
+            border: 1px solid rgba(255,215,0,0.5);
+        }
+        
+        .leaderboard-item.top-2 {
+            background: linear-gradient(135deg, rgba(192,192,192,0.3), rgba(158,158,158,0.2));
+            border: 1px solid rgba(192,192,192,0.5);
+        }
+        
+        .leaderboard-item.top-3 {
+            background: linear-gradient(135deg, rgba(205,127,50,0.3), rgba(176,141,87,0.2));
+            border: 1px solid rgba(205,127,50,0.5);
+        }
+        
+        .leaderboard-item.is-me {
+            border: 2px solid #00cec9;
+        }
+        
+        .rank {
+            font-weight: bold;
+            margin-right: 10px;
+            min-width: 25px;
+        }
+        
+        .leaderboard-name {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .leaderboard-score {
+            font-weight: bold;
+            color: #ffeaa7;
+        }
+        
+        /* End Screen */
+        #end-screen {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        #end-screen h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        
+        .final-score {
+            font-size: 3em;
+            color: #ffeaa7;
+            margin: 20px 0;
+        }
+        
+        .final-rank {
+            font-size: 1.3em;
+            color: #00cec9;
+            margin-bottom: 30px;
+        }
+        
+        .play-again-btn {
+            font-size: 1.2em;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .play-again-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Connection Status */
+        .connection-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            background: rgba(0,0,0,0.5);
+        }
+        
+        .connection-status.connected {
+            color: #00b894;
+        }
+        
+        .connection-status.disconnected {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status" id="connection-status">Verbinde...</div>
+    
+    <div class="container">
+        <h1>🎮 Multiplayer Quiz Demo</h1>
+        
+        <!-- Login Screen -->
+        <div id="login-screen">
+            <h2>Wie heißt du?</h2>
+            <input type="text" id="player-name-input" placeholder="Dein Name" maxlength="20">
+            <button onclick="startGame()">🚀 Spielen!</button>
+        </div>
+        
+        <!-- Game Screen -->
+        <div id="game-screen">
+            <div class="game-layout">
+                <div class="quiz-section">
+                    <div class="player-info">
+                        <span class="player-name" id="display-name"></span>
+                        <span class="score" id="display-score">0 Punkte</span>
+                    </div>
+                    <div class="progress" id="progress">Frage 1 von 10</div>
+                    <div class="question" id="question"></div>
+                    <div class="answers" id="answers"></div>
+                    <div class="feedback" id="feedback"></div>
+                </div>
+                
+                <div class="leaderboard">
+                    <h2><span class="live-dot"></span> Live Rangliste</h2>
+                    <ul class="leaderboard-list" id="leaderboard-list"></ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- End Screen -->
+        <div id="end-screen">
+            <h2>🎉 Geschafft!</h2>
+            <div class="final-score" id="final-score">0 Punkte</div>
+            <div class="final-rank" id="final-rank">Platz 1</div>
+            <div class="leaderboard" style="max-width: 300px; margin: 20px auto;">
+                <h2>📊 Endstand</h2>
+                <ul class="leaderboard-list" id="final-leaderboard"></ul>
+            </div>
+            <button class="play-again-btn" onclick="playAgain()">🔄 Nochmal spielen</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <script>
+        // =====================================================
+        // 🔧 FIREBASE KONFIGURATION - HIER DEINE DATEN EINFÜGEN
+        // =====================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",
+            authDomain: "lern-deutsch-arash.firebaseapp.com",
+            databaseURL: "https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "lern-deutsch-arash",
+            storageBucket: "lern-deutsch-arash.firebasestorage.app",
+            messagingSenderId: "845503292114",
+            appId: "1:845503292114:web:f76ab5fcde1e978d00c30b"
+        };
+        // =====================================================
+        
+        // Firebase initialisieren
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
+        // Quiz-Fragen (Deutsch A1-A2)
+        const questions = [
+            {
+                q: "Wie ___ du?",
+                answers: ["heißt", "heißen", "heiße", "heißte"],
+                correct: 0
+            },
+            {
+                q: "Ich ___ aus Deutschland.",
+                answers: ["kommt", "kommen", "komme", "kommst"],
+                correct: 2
+            },
+            {
+                q: "Das ist ___ Buch.",
+                answers: ["ein", "eine", "einen", "einer"],
+                correct: 0
+            },
+            {
+                q: "Wir ___ Deutsch.",
+                answers: ["lernt", "lerne", "lernen", "lernst"],
+                correct: 2
+            },
+            {
+                q: "___ geht es dir?",
+                answers: ["Was", "Wer", "Wie", "Wo"],
+                correct: 2
+            },
+            {
+                q: "Ich habe ___ Schwester.",
+                answers: ["ein", "eine", "einen", "einem"],
+                correct: 1
+            },
+            {
+                q: "Er ___ gern Fußball.",
+                answers: ["spielen", "spiele", "spielst", "spielt"],
+                correct: 3
+            },
+            {
+                q: "Das Buch liegt ___ dem Tisch.",
+                answers: ["auf", "in", "an", "über"],
+                correct: 0
+            },
+            {
+                q: "Ich ___ gestern ins Kino gegangen.",
+                answers: ["habe", "bin", "war", "hatte"],
+                correct: 1
+            },
+            {
+                q: "Sie ___ sehr gut Englisch.",
+                answers: ["sprecht", "sprechen", "spricht", "spreche"],
+                correct: 2
+            }
+        ];
+        
+        // Spielstatus
+        let playerName = "";
+        let playerId = "";
+        let currentQuestion = 0;
+        let score = 0;
+        let shuffledQuestions = [];
+        
+        // Verbindungsstatus
+        const connectedRef = database.ref(".info/connected");
+        connectedRef.on("value", (snap) => {
+            const status = document.getElementById("connection-status");
+            if (snap.val() === true) {
+                status.textContent = "🟢 Verbunden";
+                status.className = "connection-status connected";
+            } else {
+                status.textContent = "🔴 Offline";
+                status.className = "connection-status disconnected";
+            }
+        });
+        
+        // Leaderboard listener
+        function setupLeaderboardListener() {
+            const leaderboardRef = database.ref("leaderboard").orderByChild("score").limitToLast(10);
+            
+            leaderboardRef.on("value", (snapshot) => {
+                const players = [];
+                snapshot.forEach((child) => {
+                    players.push({
+                        id: child.key,
+                        ...child.val()
+                    });
+                });
+                
+                // Sortieren (höchste Punktzahl zuerst)
+                players.sort((a, b) => b.score - a.score);
+                
+                updateLeaderboardUI(players, "leaderboard-list");
+                updateLeaderboardUI(players, "final-leaderboard");
+            });
+        }
+        
+        function updateLeaderboardUI(players, elementId) {
+            const list = document.getElementById(elementId);
+            if (!list) return;
+            
+            list.innerHTML = "";
+            
+            players.forEach((player, index) => {
+                const item = document.createElement("li");
+                item.className = "leaderboard-item";
+                
+                if (index === 0) item.classList.add("top-1");
+                if (index === 1) item.classList.add("top-2");
+                if (index === 2) item.classList.add("top-3");
+                if (player.id === playerId) item.classList.add("is-me");
+                
+                const medals = ["🥇", "🥈", "🥉"];
+                const rankDisplay = index < 3 ? medals[index] : `${index + 1}.`;
+                
+                item.innerHTML = `
+                    <span class="rank">${rankDisplay}</span>
+                    <span class="leaderboard-name">${player.name}</span>
+                    <span class="leaderboard-score">${player.score}</span>
+                `;
+                
+                list.appendChild(item);
+            });
+        }
+        
+        // Spiel starten
+        function startGame() {
+            playerName = document.getElementById("player-name-input").value.trim();
+            
+            if (!playerName) {
+                alert("Bitte gib deinen Namen ein!");
+                return;
+            }
+            
+            // Spieler-ID generieren
+            playerId = "player_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+            
+            // Spieler in Leaderboard eintragen
+            database.ref("leaderboard/" + playerId).set({
+                name: playerName,
+                score: 0,
+                timestamp: Date.now()
+            });
+            
+            // Bei Disconnect entfernen (optional - auskommentieren wenn Spieler bleiben sollen)
+            // database.ref("leaderboard/" + playerId).onDisconnect().remove();
+            
+            // Fragen mischen
+            shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+            
+            // UI wechseln
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("game-screen").style.display = "block";
+            document.getElementById("display-name").textContent = playerName;
+            
+            // Leaderboard listener starten
+            setupLeaderboardListener();
+            
+            // Erste Frage zeigen
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            if (currentQuestion >= shuffledQuestions.length) {
+                endGame();
+                return;
+            }
+            
+            const q = shuffledQuestions[currentQuestion];
+            
+            document.getElementById("progress").textContent = 
+                `Frage ${currentQuestion + 1} von ${shuffledQuestions.length}`;
+            document.getElementById("question").textContent = q.q;
+            document.getElementById("feedback").className = "feedback";
+            document.getElementById("feedback").textContent = "";
+            
+            const answersDiv = document.getElementById("answers");
+            answersDiv.innerHTML = "";
+            
+            // Antworten mischen
+            const shuffledAnswers = q.answers.map((a, i) => ({text: a, originalIndex: i}));
+            shuffledAnswers.sort(() => Math.random() - 0.5);
+            
+            shuffledAnswers.forEach((answer) => {
+                const btn = document.createElement("button");
+                btn.className = "answer-btn";
+                btn.textContent = answer.text;
+                btn.onclick = () => checkAnswer(btn, answer.originalIndex === q.correct);
+                answersDiv.appendChild(btn);
+            });
+        }
+        
+        function checkAnswer(btn, isCorrect) {
+            // Alle Buttons deaktivieren
+            document.querySelectorAll(".answer-btn").forEach(b => b.disabled = true);
+            
+            const feedback = document.getElementById("feedback");
+            
+            if (isCorrect) {
+                btn.classList.add("correct");
+                score += 10;
+                feedback.textContent = "✅ Richtig! +10 Punkte";
+                feedback.className = "feedback correct";
+                
+                // Score in Firebase updaten
+                database.ref("leaderboard/" + playerId + "/score").set(score);
+            } else {
+                btn.classList.add("wrong");
+                feedback.textContent = "❌ Leider falsch!";
+                feedback.className = "feedback wrong";
+                
+                // Richtige Antwort markieren
+                const correctAnswer = shuffledQuestions[currentQuestion].answers[shuffledQuestions[currentQuestion].correct];
+                document.querySelectorAll(".answer-btn").forEach(b => {
+                    if (b.textContent === correctAnswer) {
+                        b.classList.add("correct");
+                    }
+                });
+            }
+            
+            document.getElementById("display-score").textContent = score + " Punkte";
+            
+            // Nächste Frage nach Delay
+            setTimeout(() => {
+                currentQuestion++;
+                showQuestion();
+            }, 1500);
+        }
+        
+        function endGame() {
+            document.getElementById("game-screen").style.display = "none";
+            document.getElementById("end-screen").style.display = "block";
+            document.getElementById("final-score").textContent = score + " Punkte";
+            
+            // Rang berechnen
+            database.ref("leaderboard").orderByChild("score").once("value", (snapshot) => {
+                const players = [];
+                snapshot.forEach((child) => {
+                    players.push({id: child.key, ...child.val()});
+                });
+                players.sort((a, b) => b.score - a.score);
+                
+                const rank = players.findIndex(p => p.id === playerId) + 1;
+                document.getElementById("final-rank").textContent = `🏆 Platz ${rank} von ${players.length}`;
+            });
+        }
+        
+        function playAgain() {
+            // Reset
+            currentQuestion = 0;
+            score = 0;
+            
+            // Fragen neu mischen
+            shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+            
+            // Score zurücksetzen in Firebase
+            database.ref("leaderboard/" + playerId + "/score").set(0);
+            
+            // UI
+            document.getElementById("end-screen").style.display = "none";
+            document.getElementById("game-screen").style.display = "block";
+            document.getElementById("display-score").textContent = "0 Punkte";
+            
+            showQuestion();
+        }
+        
+        // Enter-Taste zum Starten
+        document.getElementById("player-name-input").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") startGame();
+        });
+    </script>
+    
+    <!-- Goatcounter -->
+    <script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
