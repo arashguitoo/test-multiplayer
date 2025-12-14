@@ -3,185 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎮 Multiplayer Arena - Lern Deutsch mit Arash</title>
+    <title>🎮 Multiplayer Arena</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            min-height: 100vh;
-            color: white;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            text-align: center;
-            padding: 40px 20px;
-        }
-        
-        .logo {
-            font-size: 4em;
-            margin-bottom: 15px;
-            animation: bounce 2s infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #ffd700, #ff8c00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .subtitle {
-            color: #888;
-            font-size: 1.1em;
-        }
-        
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 40px;
-        }
-        
-        .game-card {
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.3s;
-            text-decoration: none;
-            color: white;
-            display: block;
-        }
-        
-        .game-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(255,215,0,0.5);
-            box-shadow: 0 10px 40px rgba(255,215,0,0.2);
-        }
-        
-        .game-icon {
-            font-size: 4em;
-            text-align: center;
-            padding: 30px;
-            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,140,0,0.1));
-        }
-        
-        .game-info {
-            padding: 20px;
-        }
-        
-        .game-title {
-            font-size: 1.3em;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #ffd700;
-        }
-        
-        .game-description {
-            color: #aaa;
-            font-size: 0.95em;
-            line-height: 1.5;
-            margin-bottom: 15px;
-        }
-        
-        .game-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .tag {
-            padding: 5px 12px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            font-size: 0.8em;
-            color: #ccc;
-        }
-        
-        .tag.multiplayer {
-            background: rgba(0,184,148,0.2);
-            color: #00b894;
-        }
-        
-        .tag.timer {
-            background: rgba(231,76,60,0.2);
-            color: #e74c3c;
-        }
-        
-        .game-play-btn {
-            display: block;
-            text-align: center;
-            padding: 15px;
-            background: linear-gradient(135deg, #00b894, #00cec9);
-            color: white;
-            font-weight: bold;
-            font-size: 1em;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .game-play-btn:hover {
-            background: linear-gradient(135deg, #00cec9, #00b894);
-        }
-        
-        /* Coming Soon Card */
-        .game-card.coming-soon {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        
-        .game-card.coming-soon .game-play-btn {
-            background: #555;
-        }
-        
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666;
-            font-size: 0.9em;
-        }
-        
-        footer a {
-            color: #ffd700;
-            text-decoration: none;
-        }
-        
-        /* Info Box */
-        .info-box {
-            background: rgba(255,215,0,0.1);
-            border: 1px solid rgba(255,215,0,0.3);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 30px 0;
-            text-align: center;
-        }
-        
-        .info-box h3 {
-            color: #ffd700;
-            margin-bottom: 10px;
-        }
-        
-        .info-box p {
-            color: #aaa;
-            line-height: 1.6;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; color: white; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; padding: 40px 20px; }
+        .logo { font-size: 4em; margin-bottom: 15px; }
+        h1 { font-size: 2em; margin-bottom: 10px; background: linear-gradient(135deg, #ffd700, #ff8c00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: #888; font-size: 1.1em; }
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-top: 30px; }
+        .game-card { background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; text-decoration: none; color: white; display: block; transition: all 0.3s; }
+        .game-card:hover { transform: translateY(-5px); border-color: rgba(255,215,0,0.5); box-shadow: 0 10px 40px rgba(255,215,0,0.2); }
+        .game-icon { font-size: 3.5em; text-align: center; padding: 25px; background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,140,0,0.1)); }
+        .game-info { padding: 20px; }
+        .game-title { font-size: 1.2em; font-weight: bold; margin-bottom: 10px; color: #ffd700; }
+        .game-description { color: #aaa; font-size: 0.9em; line-height: 1.5; margin-bottom: 15px; }
+        .game-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { padding: 4px 10px; background: rgba(255,255,255,0.1); border-radius: 12px; font-size: 0.75em; color: #ccc; }
+        .tag.multiplayer { background: rgba(0,184,148,0.2); color: #00b894; }
+        .tag.timer { background: rgba(231,76,60,0.2); color: #e74c3c; }
+        .game-play-btn { display: block; text-align: center; padding: 15px; background: linear-gradient(135deg, #00b894, #00cec9); color: white; font-weight: bold; }
+        .info-box { background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: 15px; padding: 20px; margin: 20px 0; text-align: center; }
+        .info-box h3 { color: #ffd700; margin-bottom: 10px; }
+        .info-box p { color: #aaa; line-height: 1.6; }
+        footer { text-align: center; padding: 40px 20px; color: #666; font-size: 0.9em; }
+        footer a { color: #ffd700; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -191,84 +38,41 @@
             <h1>Multiplayer Arena</h1>
             <p class="subtitle">Interaktive Spiele für den Deutschunterricht</p>
         </header>
-        
         <div class="info-box">
             <h3>🎯 Wie funktioniert's?</h3>
-            <p>
-                Eine/r von euch wird <strong>Spielleiter</strong> und erstellt ein Spiel.<br>
-                Ihr bekommt einen <strong>4-stelligen Code</strong> – alle anderen geben ihn ein und treten bei.<br>
-                Ihr könnt euch jederzeit verabreden und zusammen spielen! 🎮
-            </p>
+            <p>Eine/r von euch wird <strong>Spielleiter</strong> und erstellt ein Spiel.<br>Ihr bekommt einen <strong>4-stelligen Code</strong> – alle anderen geben ihn ein und treten bei.<br>Ihr könnt euch jederzeit verabreden und zusammen spielen! 🎮</p>
         </div>
-        
         <div class="games-grid">
-            
-            <!-- Spiel 1: Wer überlebt -->
             <a href="wer-ueberlebt.html" class="game-card">
                 <div class="game-icon">🎯</div>
                 <div class="game-info">
                     <div class="game-title">Wer überlebt? - Grammatik</div>
-                    <div class="game-description">
-                        50 Fragen, 3 Leben, 15 Sekunden pro Frage. 
-                        Wer am Ende noch lebt, gewinnt!
-                    </div>
-                    <div class="game-tags">
-                        <span class="tag multiplayer">👥 Multiplayer</span>
-                        <span class="tag timer">⏱️ 15 Sek</span>
-                        <span class="tag">Reflexivverben</span>
-                        <span class="tag">Modalverben</span>
-                    </div>
+                    <div class="game-description">50 Fragen, 3 Leben, 15 Sekunden. Reflexivverben, Modalverben, Akkusativ/Dativ</div>
+                    <div class="game-tags"><span class="tag multiplayer">👥 Multiplayer</span><span class="tag timer">⏱️ 15 Sek</span><span class="tag">Grammatik</span></div>
                 </div>
                 <div class="game-play-btn">▶️ SPIELEN</div>
             </a>
-            
-            <!-- Spiel 2: Wer überlebt - Konnektoren -->
             <a href="wer-ueberlebt-konnektoren.html" class="game-card">
                 <div class="game-icon">🎯</div>
                 <div class="game-info">
                     <div class="game-title">Wer überlebt? - Konnektoren</div>
-                    <div class="game-description">
-                        30 Fragen, 3 Leben, 15 Sekunden. 
-                        dass, weil, denn, trotzdem, wenn, als
-                    </div>
-                    <div class="game-tags">
-                        <span class="tag multiplayer">👥 Multiplayer</span>
-                        <span class="tag timer">⏱️ 15 Sek</span>
-                        <span class="tag">Konnektoren</span>
-                    </div>
+                    <div class="game-description">30 Fragen, 3 Leben, 15 Sekunden. dass, weil, denn, trotzdem, wenn, als</div>
+                    <div class="game-tags"><span class="tag multiplayer">👥 Multiplayer</span><span class="tag timer">⏱️ 15 Sek</span><span class="tag">Konnektoren</span></div>
                 </div>
                 <div class="game-play-btn">▶️ SPIELEN</div>
             </a>
-            
-            <!-- Platzhalter für zukünftige Spiele -->
             <a href="team-battle.html" class="game-card">
                 <div class="game-icon">⚔️</div>
                 <div class="game-info">
-                    <div class="game-title">Team Battle: Konnektoren</div>
-                    <div class="game-description">
-                        Mond vs. Sonne vs. Stern vs. Ozean – 
-                        welches Team sammelt die meisten Punkte?
-                    </div>
-                    <div class="game-tags">
-                        <span class="tag multiplayer">👥 4 Teams</span>
-                        <span class="tag timer">⏱️ 15 Sek</span>
-                        <span class="tag">dass, weil, denn</span>
-                    </div>
+                    <div class="game-title">Team Battle - Konnektoren</div>
+                    <div class="game-description">4 Teams: Mond, Sonne, Stern, Ozean. Sammelt Punkte für euer Team!</div>
+                    <div class="game-tags"><span class="tag multiplayer">👥 4 Teams</span><span class="tag timer">⏱️ 15 Sek</span><span class="tag">Konnektoren</span></div>
                 </div>
                 <div class="game-play-btn">▶️ SPIELEN</div>
             </a>
-            
         </div>
-        
-        <footer>
-            <p>
-                Made with ❤️ by <a href="https://arashguitoo.github.io/" target="_blank">Arash</a><br>
-                <span style="font-size: 0.85em;">Für den Integrationskurs JIK-AWO</span>
-            </p>
-        </footer>
+        <footer><p>Made with ❤️ by <a href="https://arashguitoo.github.io/" target="_blank">Arash</a><br><small>Für den Integrationskurs</small></p></footer>
     </div>
-    
-    <!-- Goatcounter -->
     <script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
