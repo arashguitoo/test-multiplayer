@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔒 Escape Room Deutschland - Multiplayer Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a, #1a0a0f, #0f0a1a);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.5em;
+            text-align: center;
+            margin: 30px 0;
+            background: linear-gradient(135deg, #9D4EDD, #E63946);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(157, 78, 221, 0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            color: #9D4EDD;
+        }
+
+        .mystery-box {
+            background: rgba(157, 78, 221, 0.1);
+            border: 2px solid rgba(157, 78, 221, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mystery-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(157, 78, 221, 0.1), transparent);
+            animation: scan 3s infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #9D4EDD, #E63946);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 20px rgba(157, 78, 221, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(157, 78, 221, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #06D6A0, #7DD3FC);
+        }
+
+        .mode-selection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .mode-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(157, 78, 221, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-card:hover {
+            background: rgba(157, 78, 221, 0.1);
+            border-color: #9D4EDD;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(157, 78, 221, 0.3);
+        }
+
+        .mode-card h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2em;
+            margin: 20px 0;
+            color: #9D4EDD;
+        }
+
+        .input-group {
+            margin: 30px 0;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #9D4EDD;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 2px solid rgba(157, 78, 221, 0.3);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .game-code-display {
+            background: rgba(157, 78, 221, 0.1);
+            border: 3px solid #9D4EDD;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .game-code-display h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #E63946;
+        }
+
+        .game-code {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 4em;
+            color: #9D4EDD;
+            letter-spacing: 15px;
+            text-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
+        }
+
+        .players-list {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .player-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #9D4EDD;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .player-name {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .player-score {
+            background: linear-gradient(135deg, #9D4EDD, #E63946);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .room-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .room-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(157, 78, 221, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .room-card:hover {
+            background: rgba(157, 78, 221, 0.1);
+            border-color: #9D4EDD;
+            transform: scale(1.05);
+        }
+
+        .room-card.selected {
+            background: rgba(157, 78, 221, 0.2);
+            border-color: #9D4EDD;
+        }
+
+        .room-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+        }
+
+        .room-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .room-name {
+            font-weight: 600;
+            margin: 10px 0 5px 0;
+        }
+
+        .room-theme {
+            font-size: 0.85em;
+            color: #9D4EDD;
+        }
+
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            background: linear-gradient(135deg, #9D4EDD, #E63946);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .timer {
+            background: linear-gradient(135deg, #E63946, #9D4EDD);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.5em;
+        }
+
+        .question-text {
+            font-size: 1.5em;
+            margin: 30px 0;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .answer-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(157, 78, 221, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            font-size: 1.1em;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .answer-btn:hover {
+            background: rgba(157, 78, 221, 0.1);
+            border-color: #9D4EDD;
+            transform: scale(1.02);
+        }
+
+        .answer-btn.selected {
+            background: rgba(157, 78, 221, 0.2);
+            border-color: #9D4EDD;
+        }
+
+        .answer-btn.correct {
+            background: rgba(6, 214, 160, 0.3);
+            border-color: #06D6A0;
+        }
+
+        .answer-btn.wrong {
+            background: rgba(230, 57, 70, 0.3);
+            border-color: #E63946;
+        }
+
+        .leaderboard {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .leaderboard-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #9D4EDD;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border-left: 4px solid #9D4EDD;
+        }
+
+        .leaderboard-item.rank-1 {
+            border-left-color: #FFD700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .leaderboard-item.rank-2 {
+            border-left-color: #C0C0C0;
+        }
+
+        .leaderboard-item.rank-3 {
+            border-left-color: #CD7F32;
+        }
+
+        .rank-badge {
+            font-size: 2em;
+            margin-right: 20px;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-score-big {
+            background: linear-gradient(135deg, #9D4EDD, #E63946);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.3em;
+        }
+
+        .waiting-message {
+            text-align: center;
+            font-size: 1.3em;
+            color: #9D4EDD;
+            margin: 50px 0;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .error-message {
+            background: rgba(230, 57, 70, 0.2);
+            border: 2px solid #E63946;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            color: #E63946;
+        }
+
+        .story-text {
+            background: rgba(157, 78, 221, 0.1);
+            border-left: 4px solid #9D4EDD;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-style: italic;
+            line-height: 1.8;
+        }
+
+        .achievement-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #0a0a0a;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin: 5px;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .mode-selection {
+                grid-template-columns: 1fr;
+            }
+
+            .answers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .game-code {
+                font-size: 2.5em;
+                letter-spacing: 8px;
+            }
+
+            .room-selection {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="startScreen" class="screen active">
+            <h1>🔒 Escape Room Deutschland</h1>
+            <p class="subtitle">Rette Deutschland aus den mysteriösen Räumen!</p>
+            
+            <div class="mystery-box">
+                <div class="story-text">
+                    🕵️ Ein verrückter Wissenschaftler hat Deutschland in 15 mysteriöse Räume verwandelt! 
+                    Nur durch das Lösen von Grammatik-Rätseln könnt ihr die Räume öffnen und Deutschland befreien. 
+                    Seid ihr bereit für das Abenteuer?
+                </div>
+            </div>
+            
+            <div class="mode-selection">
+                <div class="mode-card" onclick="selectMode('host')">
+                    <div style="font-size: 4em;">🕵️</div>
+                    <h2>Detektiv</h2>
+                    <p>Mission starten</p>
+                </div>
+                
+                <div class="mode-card" onclick="selectMode('player')">
+                    <div style="font-size: 4em;">🔍</div>
+                    <h2>Agent</h2>
+                    <p>Mission beitreten</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Host Setup Screen -->
+        <div id="hostSetupScreen" class="screen">
+            <h1>🔒 Mission wählen</h1>
+            
+            <div class="input-group">
+                <label>Wähle einen Escape Room:</label>
+                <div id="roomSelectionHost" class="room-selection"></div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="btn" onclick="createGame()">🚀 Mission starten</button>
+                <button class="btn btn-secondary" onclick="backToStart()" style="margin-left: 10px;">↩️ Zurück</button>
+            </div>
+        </div>
+
+        <!-- Host Lobby Screen -->
+        <div id="hostLobbyScreen" class="screen">
+            <h1>🔒 Warte auf Agenten</h1>
+            
+            <div class="game-code-display">
+                <h2>Missions-Code:</h2>
+                <div class="game-code" id="gameCodeDisplay"></div>
+            </div>
+
+            <div class="players-list">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #9D4EDD;">Angemeldete Agenten:</h2>
+                <div id="playersList"></div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="btn" onclick="startQuiz()">▶️ Mission starten</button>
+                <button class="btn btn-secondary" onclick="cancelGame()" style="margin-left: 10px;">❌ Abbrechen</button>
+            </div>
+        </div>
+
+        <!-- Player Join Screen -->
+        <div id="playerJoinScreen" class="screen">
+            <h1>🔍 Mission beitreten</h1>
+            
+            <div class="input-group">
+                <label>Dein Agenten-Name:</label>
+                <input type="text" id="playerName" placeholder="z.B. Agent 007" maxlength="20">
+            </div>
+
+            <div class="input-group">
+                <label>Missions-Code:</label>
+                <input type="text" id="gameCodeInput" placeholder="z.B. ABCD" maxlength="4">
+            </div>
+
+            <div id="joinError" class="error-message" style="display: none;"></div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="btn" onclick="joinGame()">🚀 Beitreten</button>
+                <button class="btn btn-secondary" onclick="backToStart()" style="margin-left: 10px;">↩️ Zurück</button>
+            </div>
+        </div>
+
+        <!-- Player Waiting Screen -->
+        <div id="playerWaitingScreen" class="screen">
+            <h1>🔒 Escape Room</h1>
+            
+            <div class="game-code-display">
+                <h2>Missions-Code:</h2>
+                <div class="game-code" id="playerGameCode"></div>
+            </div>
+
+            <div class="waiting-message pulse">
+                <p>⏳ Mission wird vorbereitet...</p>
+                <p style="font-size: 0.9em; margin-top: 20px; color: rgba(255,255,255,0.6);">
+                    Der Detektiv startet die Mission gleich!
+                </p>
+            </div>
+
+            <div class="players-list">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #9D4EDD;">Dein Team:</h2>
+                <div id="playersListPlayer"></div>
+            </div>
+        </div>
+
+        <!-- Quiz Screen (Host) -->
+        <div id="quizScreenHost" class="screen">
+            <div class="question-container">
+                <div class="question-header">
+                    <div class="question-number" id="questionNumberHost">Rätsel 1/15</div>
+                    <div class="timer" id="timerHost">15</div>
+                </div>
+
+                <div class="question-text" id="questionTextHost"></div>
+
+                <div class="answers-grid" id="answersGridHost"></div>
+
+                <div class="leaderboard">
+                    <div class="leaderboard-title">🏆 Bestenliste</div>
+                    <div id="liveLeaderboard"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn" onclick="nextQuestion()" id="nextQuestionBtn" style="display: none;">▶️ Nächstes Rätsel</button>
+                    <button class="btn" onclick="endGame()" id="endGameBtn" style="display: none;">🏁 Mission beenden</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Screen (Player) -->
+        <div id="quizScreenPlayer" class="screen">
+            <div class="question-container">
+                <div class="question-header">
+                    <div class="question-number" id="questionNumberPlayer">Rätsel 1/15</div>
+                    <div class="timer" id="timerPlayer">15</div>
+                </div>
+
+                <div class="question-text" id="questionTextPlayer"></div>
+
+                <div class="answers-grid" id="answersGridPlayer"></div>
+
+                <div id="feedbackMessage" style="text-align: center; margin-top: 20px; font-size: 1.3em; font-weight: 700;"></div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="screen">
+            <h1>🎉 Mission erfolgreich!</h1>
+            
+            <div class="mystery-box">
+                <div class="story-text">
+                    ✅ Ihr habt es geschafft! Deutschland ist befreit! 
+                    Der verrückte Wissenschaftler wurde gestoppt und alle Räume sind wieder geöffnet. 
+                    Ihr seid wahre Grammatik-Helden! 🦸‍♂️🦸‍♀️
+                </div>
+            </div>
+
+            <div class="leaderboard">
+                <div class="leaderboard-title">Die besten Agenten:</div>
+                <div id="finalLeaderboard"></div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="btn" onclick="location.reload()">🔄 Neue Mission</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",
+            authDomain: "lern-deutsch-arash.firebaseapp.com",
+            databaseURL: "https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "lern-deutsch-arash",
+            storageBucket: "lern-deutsch-arash.firebasestorage.app",
+            messagingSenderId: "845503292114",
+            appId: "1:845503292114:web:f76ab5fcde1e978d00c30b"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Game State
+        let gameMode = '';
+        let gameCode = '';
+        let playerId = '';
+        let playerName = '';
+        let currentQuestionIndex = 0;
+        let playerScore = 0;
+        let selectedRoom = '';
+        let timerInterval;
+        let timeLeft = 15;
+        let hasAnswered = false;
+
+        // Rooms Definition
+        const rooms = [
+            { id: 'muenchen', icon: '🔒', name: 'München', theme: 'Präsens' },
+            { id: 'hamburg', icon: '🔒', name: 'Hamburg', theme: 'Perfekt' },
+            { id: 'berlin', icon: '🔒', name: 'Berlin', theme: 'Präteritum' },
+            { id: 'koeln', icon: '🔒', name: 'Köln', theme: 'Akkusativ' },
+            { id: 'frankfurt', icon: '🔒', name: 'Frankfurt', theme: 'Dativ' },
+            { id: 'stuttgart', icon: '🔒', name: 'Stuttgart', theme: 'Modalverben' },
+            { id: 'dresden', icon: '🔒', name: 'Dresden', theme: 'Reflexivverben' },
+            { id: 'leipzig', icon: '🔒', name: 'Leipzig', theme: 'Wechselpräp.' },
+            { id: 'bremen', icon: '🔒', name: 'Bremen', theme: 'Imperativ' },
+            { id: 'hannover', icon: '🔒', name: 'Hannover', theme: 'Nebensätze' },
+            { id: 'nuernberg', icon: '🔒', name: 'Nürnberg', theme: 'Konjunktiv II' },
+            { id: 'duesseldorf', icon: '🔒', name: 'Düsseldorf', theme: 'Futur' },
+            { id: 'heidelberg', icon: '🔒', name: 'Heidelberg', theme: 'Komparativ' },
+            { id: 'freiburg', icon: '🔒', name: 'Freiburg', theme: 'Possessivpron.' },
+            { id: 'potsdam', icon: '🔒', name: 'Potsdam', theme: '🏆 FINALE' }
+        ];
+
+        // Questions Database
+        const questionsDB = {
+            muenchen: [
+                { q: 'Ich ___ in München.', answers: ['wohne', 'wohnst', 'wohnt', 'wohnen'], correct: 0 },
+                { q: 'Er ___ Brezeln.', answers: ['isst', 'esse', 'esst', 'essen'], correct: 0 },
+                { q: 'Wir ___ Deutsch.', answers: ['lernen', 'lerne', 'lernst', 'lernt'], correct: 0 },
+                { q: 'Du ___ das Oktoberfest.', answers: ['besuchst', 'besuche', 'besucht', 'besuchen'], correct: 0 },
+                { q: 'Sie (sg.) ___ um 8 Uhr.', answers: ['kommt', 'komme', 'kommst', 'kommen'], correct: 0 },
+                { q: 'Ich ___ gerne Weißwurst.', answers: ['esse', 'isst', 'esst', 'essen'], correct: 0 },
+                { q: 'Er ___ in der Isar.', answers: ['schwimmt', 'schwimme', 'schwimmst', 'schwimmen'], correct: 0 },
+                { q: 'Wir ___ den Englischen Garten.', answers: ['lieben', 'liebe', 'liebst', 'liebt'], correct: 0 },
+                { q: 'Ihr ___ Bayern München.', answers: ['seht', 'sehe', 'siehst', 'sehen'], correct: 0 },
+                { q: 'Sie (pl.) ___ zum Marienplatz.', answers: ['gehen', 'gehe', 'gehst', 'geht'], correct: 0 },
+                { q: 'Du ___ die Alpen.', answers: ['siehst', 'sehe', 'seht', 'sehen'], correct: 0 },
+                { q: 'Ich ___ auf den Turm.', answers: ['steige', 'steigst', 'steigt', 'steigen'], correct: 0 },
+                { q: 'Er ___ Blasmusik.', answers: ['hört', 'höre', 'hörst', 'hören'], correct: 0 },
+                { q: 'Wir ___ Bier.', answers: ['trinken', 'trinke', 'trinkst', 'trinkt'], correct: 0 },
+                { q: 'Sie (sg.) ___ Dirndl.', answers: ['trägt', 'trage', 'trägst', 'tragen'], correct: 0 }
+            ],
+            hamburg: [
+                { q: 'Ich ___ den Hafen ___.', answers: ['habe besucht', 'bin besucht', 'habe besuchtet', 'bin besuchtet'], correct: 0 },
+                { q: 'Er ___ Fischbrötchen ___.', answers: ['hat gegessen', 'ist gegessen', 'hat gegesst', 'ist gegesst'], correct: 0 },
+                { q: 'Wir ___ an die Elbe ___.', answers: ['sind gefahren', 'haben gefahren', 'sind gefahrt', 'haben gefahrt'], correct: 0 },
+                { q: 'Du ___ die Speicherstadt ___.', answers: ['hast gesehen', 'bist gesehen', 'hast geseht', 'bist geseht'], correct: 0 },
+                { q: 'Sie (sg.) ___ ein Schiff ___.', answers: ['hat genommen', 'ist genommen', 'hat genommt', 'ist genommt'], correct: 0 },
+                { q: 'Ich ___ ins Musical ___.', answers: ['bin gegangen', 'habe gegangen', 'bin gegangt', 'habe gegangt'], correct: 0 },
+                { q: 'Er ___ am Strand ___.', answers: ['hat gespielt', 'ist gespielt', 'hat gespieltet', 'ist gespieltet'], correct: 0 },
+                { q: 'Wir ___ den Michel ___.', answers: ['haben besichtigt', 'sind besichtigt', 'haben besichtigtet', 'sind besichtigtet'], correct: 0 },
+                { q: 'Ihr ___ Tee ___.', answers: ['habt getrunken', 'seid getrunken', 'habt getrunket', 'seid getrunket'], correct: 0 },
+                { q: 'Sie (pl.) ___ spät ___.', answers: ['sind gekommen', 'haben gekommen', 'sind gekommt', 'haben gekommt'], correct: 0 },
+                { q: 'Du ___ viele Fotos ___.', answers: ['hast gemacht', 'bist gemacht', 'hast gemachtet', 'bist gemachtet'], correct: 0 },
+                { q: 'Ich ___ früh ___.', answers: ['bin aufgestanden', 'habe aufgestanden', 'bin aufgestehen', 'habe aufgestehen'], correct: 0 },
+                { q: 'Er ___ eine Hafenrundfahrt ___.', answers: ['hat gemacht', 'ist gemacht', 'hat gemachtet', 'ist gemachtet'], correct: 0 },
+                { q: 'Wir ___ die Elbphilharmonie ___.', answers: ['haben besucht', 'sind besucht', 'haben besuchtet', 'sind besuchtet'], correct: 0 },
+                { q: 'Sie (sg.) ___ im Regen ___.', answers: ['ist gelaufen', 'hat gelaufen', 'ist gelauft', 'hat gelauft'], correct: 0 }
+            ],
+            berlin: [
+                { q: 'Ich ___ gestern am Brandenburger Tor.', answers: ['war', 'warst', 'waren', 'wart'], correct: 0 },
+                { q: 'Er ___ eine Currywurst.', answers: ['aß', 'aßt', 'aßen', 'aßest'], correct: 0 },
+                { q: 'Wir ___ mit der U-Bahn.', answers: ['fuhren', 'fuhr', 'fuhrst', 'fuhrt'], correct: 0 },
+                { q: 'Du ___ den Reichstag.', answers: ['sahst', 'sah', 'sahen', 'saht'], correct: 0 },
+                { q: 'Sie ___ im Museum.', answers: ['ging', 'gingst', 'gingen', 'gingt'], correct: 0 },
+                { q: 'Ich ___ viele Touristen.', answers: ['traf', 'trafst', 'trafen', 'traft'], correct: 0 },
+                { q: 'Er ___ Deutsch.', answers: ['sprach', 'sprachst', 'sprachen', 'spracht'], correct: 0 },
+                { q: 'Wir ___ im Tiergarten.', answers: ['waren', 'war', 'warst', 'wart'], correct: 0 },
+                { q: 'Ihr ___ Souvenirs.', answers: ['kauftet', 'kaufte', 'kauftest', 'kauften'], correct: 0 },
+                { q: 'Sie (pl.) ___ lange.', answers: ['blieben', 'blieb', 'bliebst', 'bliebt'], correct: 0 },
+                { q: 'Du ___ ein Fahrrad.', answers: ['hattest', 'hatte', 'hatten', 'hattet'], correct: 0 },
+                { q: 'Ich ___ die Mauer.', answers: ['sah', 'sahst', 'sahen', 'saht'], correct: 0 },
+                { q: 'Er ___ im Café.', answers: ['saß', 'saßt', 'saßen', 'saßest'], correct: 0 },
+                { q: 'Wir ___ nach Kreuzberg.', answers: ['gingen', 'ging', 'gingst', 'gingt'], correct: 0 },
+                { q: 'Sie ___ ein Buch.', answers: ['las', 'last', 'lasen', 'lest'], correct: 0 }
+            ],
+            koeln: [
+                { q: 'Ich sehe ___ Dom.', answers: ['den', 'die', 'das', 'dem'], correct: 0 },
+                { q: 'Er besucht ___ Kirche.', answers: ['die', 'den', 'das', 'dem'], correct: 0 },
+                { q: 'Wir trinken ___ Kölsch.', answers: ['das', 'den', 'die', 'dem'], correct: 0 },
+                { q: 'Du kaufst ___ Ticket.', answers: ['ein', 'einen', 'eine', 'einem'], correct: 0 },
+                { q: 'Sie hat ___ Kamera.', answers: ['eine', 'ein', 'einen', 'einem'], correct: 0 },
+                { q: 'Ich esse ___ Schokolade.', answers: ['die', 'den', 'das', 'dem'], correct: 0 },
+                { q: 'Er braucht ___ Stadtplan.', answers: ['einen', 'ein', 'eine', 'einem'], correct: 0 },
+                { q: 'Wir suchen ___ Hotel.', answers: ['ein', 'einen', 'eine', 'einem'], correct: 0 },
+                { q: 'Ihr seht ___ Rhein.', answers: ['den', 'die', 'das', 'dem'], correct: 0 },
+                { q: 'Sie (pl.) hören ___ Musik.', answers: ['die', 'den', 'das', 'dem'], correct: 0 },
+                { q: 'Du fotografierst ___ Menschen.', answers: ['die', 'den', 'das', 'dem'], correct: 0 },
+                { q: 'Ich liebe ___ Stadt.', answers: ['die', 'den', 'das', 'dem'], correct: 0 },
+                { q: 'Er nimmt ___ Bus.', answers: ['den', 'die', 'das', 'dem'], correct: 0 },
+                { q: 'Wir besuchen ___ Museum.', answers: ['das', 'den', 'die', 'dem'], correct: 0 },
+                { q: 'Sie liest ___ Buch.', answers: ['ein', 'einen', 'eine', 'einem'], correct: 0 }
+            ],
+            frankfurt: [
+                { q: 'Ich helfe ___ Tourist.', answers: ['dem', 'den', 'der', 'die'], correct: 0 },
+                { q: 'Er gibt ___ Frau Geld.', answers: ['der', 'dem', 'den', 'die'], correct: 0 },
+                { q: 'Wir danken ___ Mann.', answers: ['dem', 'den', 'der', 'die'], correct: 0 },
+                { q: 'Du gehörst ___ Gruppe.', answers: ['der', 'dem', 'den', 'die'], correct: 0 },
+                { q: 'Sie folgt ___ Guide.', answers: ['dem', 'den', 'der', 'die'], correct: 0 },
+                { q: 'Ich schreibe ___ Freund.', answers: ['dem', 'den', 'der', 'die'], correct: 0 },
+                { q: 'Er antwortet ___ Lehrerin.', answers: ['der', 'dem', 'den', 'die'], correct: 0 },
+                { q: 'Wir begegnen ___ Kollegin.', answers: ['der', 'dem', 'den', 'die'], correct: 0 },
+                { q: 'Ihr vertraut ___ Team.', answers: ['dem', 'den', 'der', 'die'], correct: 0 },
+                { q: 'Sie (pl.) gratulieren ___ Chef.', answers: ['dem', 'den', 'der', 'die'], correct: 0 },
+                { q: 'Du glaubst ___ Geschichte.', answers: ['der', 'dem', 'den', 'die'], correct: 0 },
+                { q: 'Ich nütze ___ Zeit.', answers: ['die', 'der', 'dem', 'den'], correct: 0 },
+                { q: 'Er schadet ___ Firma.', answers: ['der', 'dem', 'den', 'die'], correct: 0 },
+                { q: 'Wir gefallen ___ Leuten.', answers: ['den', 'dem', 'der', 'die'], correct: 0 },
+                { q: 'Sie passt ___ Kind auf.', answers: ['dem', 'den', 'der', 'die'], correct: 0 }
+            ],
+            stuttgart: [
+                { q: 'Ich ___ heute nach Stuttgart fahren.', answers: ['muss', 'musst', 'müssen', 'müsst'], correct: 0 },
+                { q: 'Er ___ Schwäbisch sprechen.', answers: ['kann', 'kannst', 'können', 'könnt'], correct: 0 },
+                { q: 'Wir ___ das Mercedes-Museum besuchen.', answers: ['wollen', 'will', 'willst', 'wollt'], correct: 0 },
+                { q: 'Du ___ nicht laut sein.', answers: ['darfst', 'darf', 'dürfen', 'dürft'], correct: 0 },
+                { q: 'Sie ___ pünktlich kommen.', answers: ['soll', 'sollst', 'sollen', 'sollt'], correct: 0 },
+                { q: 'Ich ___ Spätzle essen.', answers: ['möchte', 'möchtest', 'möchten', 'möchtet'], correct: 0 },
+                { q: 'Er ___ früh aufstehen.', answers: ['muss', 'musst', 'müssen', 'müsst'], correct: 0 },
+                { q: 'Wir ___ gut Auto fahren.', answers: ['können', 'kann', 'kannst', 'könnt'], correct: 0 },
+                { q: 'Ihr ___ hier nicht rauchen.', answers: ['dürft', 'darf', 'darfst', 'dürfen'], correct: 0 },
+                { q: 'Sie (pl.) ___ beim Fest helfen.', answers: ['sollen', 'soll', 'sollst', 'sollt'], correct: 0 },
+                { q: 'Du ___ zum Porsche-Museum gehen.', answers: ['willst', 'will', 'wollen', 'wollt'], correct: 0 },
+                { q: 'Ich ___ Weißwein trinken.', answers: ['kann', 'kannst', 'können', 'könnt'], correct: 0 },
+                { q: 'Er ___ neue Schuhe kaufen.', answers: ['möchte', 'möchtest', 'möchten', 'möchtet'], correct: 0 },
+                { q: 'Wir ___ leise sein.', answers: ['müssen', 'muss', 'musst', 'müsst'], correct: 0 },
+                { q: 'Sie ___ die Weinberge sehen.', answers: ['will', 'willst', 'wollen', 'wollt'], correct: 0 }
+            ],
+            dresden: [
+                { q: 'Ich ___ jeden Tag.', answers: ['wasche mich', 'wäschst dich', 'wäscht sich', 'waschen uns'], correct: 0 },
+                { q: 'Er ___ in der Semperoper.', answers: ['freut sich', 'freue mich', 'freust dich', 'freuen uns'], correct: 0 },
+                { q: 'Wir ___ die Frauenkirche.', answers: ['interessieren uns', 'interessiere mich', 'interessierst dich', 'interessiert sich'], correct: 0 },
+                { q: 'Du ___ vor dem Spiegel.', answers: ['kämmst dich', 'kämme mich', 'kämmt sich', 'kämmen uns'], correct: 0 },
+                { q: 'Sie ___ schnell um.', answers: ['zieht sich', 'ziehe mich', 'ziehst dich', 'ziehen uns'], correct: 0 },
+                { q: 'Ich ___ auf den Besuch.', answers: ['freue mich', 'freust dich', 'freut sich', 'freuen uns'], correct: 0 },
+                { q: 'Er ___ beim Tanzen.', answers: ['amüsiert sich', 'amüsiere mich', 'amüsierst dich', 'amüsieren uns'], correct: 0 },
+                { q: 'Wir ___ nach rechts.', answers: ['drehen uns', 'drehe mich', 'drehst dich', 'dreht sich'], correct: 0 },
+                { q: 'Ihr ___ für Kunst.', answers: ['interessiert euch', 'interessiere mich', 'interessierst dich', 'interessiert sich'], correct: 0 },
+                { q: 'Sie (pl.) ___ an der Elbe.', answers: ['treffen sich', 'treffe mich', 'triffst dich', 'trifft sich'], correct: 0 },
+                { q: 'Du ___ warm an.', answers: ['ziehst dich', 'ziehe mich', 'zieht sich', 'ziehen uns'], correct: 0 },
+                { q: 'Ich ___ im Zwinger.', answers: ['befinde mich', 'befindest dich', 'befindet sich', 'befinden uns'], correct: 0 },
+                { q: 'Er ___ viel.', answers: ['bewegt sich', 'bewege mich', 'bewegst dich', 'bewegen uns'], correct: 0 },
+                { q: 'Wir ___ gut.', answers: ['erholen uns', 'erhole mich', 'erholst dich', 'erholt sich'], correct: 0 },
+                { q: 'Sie ___ über die Stadt.', answers: ['wundert sich', 'wundere mich', 'wunderst dich', 'wundern uns'], correct: 0 }
+            ],
+            leipzig: [
+                { q: 'Der Hund liegt ___ dem Tisch.', answers: ['unter', 'über', 'neben', 'zwischen'], correct: 0 },
+                { q: 'Ich stelle das Buch ___ das Regal.', answers: ['in', 'an', 'auf', 'über'], correct: 0 },
+                { q: 'Die Katze springt ___ den Stuhl.', answers: ['auf', 'in', 'an', 'über'], correct: 0 },
+                { q: 'Du sitzt ___ mir.', answers: ['neben', 'über', 'unter', 'zwischen'], correct: 0 },
+                { q: 'Er hängt die Lampe ___ den Tisch.', answers: ['über', 'auf', 'in', 'an'], correct: 0 },
+                { q: 'Wir gehen ___ den Park.', answers: ['in', 'an', 'auf', 'über'], correct: 0 },
+                { q: 'Das Auto parkt ___ dem Haus.', answers: ['vor', 'über', 'unter', 'zwischen'], correct: 0 },
+                { q: 'Sie legt das Handy ___ den Tisch.', answers: ['auf', 'in', 'an', 'über'], correct: 0 },
+                { q: 'Ich gehe ___ die Straße.', answers: ['über', 'auf', 'in', 'an'], correct: 0 },
+                { q: 'Der Vogel fliegt ___ das Dach.', answers: ['über', 'auf', 'in', 'an'], correct: 0 },
+                { q: 'Du stellst die Blumen ___ das Fenster.', answers: ['vor', 'über', 'unter', 'zwischen'], correct: 0 },
+                { q: 'Er geht ___ dem Baum.', answers: ['hinter', 'über', 'unter', 'neben'], correct: 0 },
+                { q: 'Wir sitzen ___ dem Kino.', answers: ['in', 'an', 'auf', 'über'], correct: 0 },
+                { q: 'Sie läuft ___ uns.', answers: ['zwischen', 'über', 'unter', 'neben'], correct: 0 },
+                { q: 'Ich lege den Brief ___ den Umschlag.', answers: ['in', 'an', 'auf', 'über'], correct: 0 }
+            ],
+            bremen: [
+                { q: '___ die Tür!', answers: ['Öffne', 'Öffnen Sie', 'Öffnet', 'Öffnest'], correct: 0 },
+                { q: '___ vorsichtig! (Sie)', answers: ['Seien Sie', 'Sei', 'Seid', 'Bist'], correct: 0 },
+                { q: '___ das Licht an! (ihr)', answers: ['Macht', 'Mach', 'Machen Sie', 'Machst'], correct: 0 },
+                { q: '___ leise!', answers: ['Sei', 'Sind Sie', 'Seid', 'Bist'], correct: 0 },
+                { q: '___ hier! (Sie)', answers: ['Bleiben Sie', 'Bleib', 'Bleibt', 'Bleibst'], correct: 0 },
+                { q: '___ schnell! (ihr)', answers: ['Kommt', 'Komm', 'Kommen Sie', 'Kommst'], correct: 0 },
+                { q: '___ den Stadtmusikanten!', answers: ['Besuch', 'Besuchen Sie', 'Besucht', 'Besuchst'], correct: 0 },
+                { q: '___ die Geschichte! (Sie)', answers: ['Hören Sie', 'Hör', 'Hört', 'Hörst'], correct: 0 },
+                { q: '___ ein Foto!', answers: ['Mach', 'Machen Sie', 'Macht', 'Machst'], correct: 0 },
+                { q: '___ pünktlich! (ihr)', answers: ['Seid', 'Sei', 'Sind Sie', 'Bist'], correct: 0 },
+                { q: '___ den Weg! (Sie)', answers: ['Zeigen Sie', 'Zeig', 'Zeigt', 'Zeigst'], correct: 0 },
+                { q: '___ das Ticket!', answers: ['Nimm', 'Nehmen Sie', 'Nehmt', 'Nimmst'], correct: 0 },
+                { q: '___ langsam! (ihr)', answers: ['Fahrt', 'Fahr', 'Fahren Sie', 'Fährst'], correct: 0 },
+                { q: '___ hier! (Sie)', answers: ['Warten Sie', 'Wart', 'Wartet', 'Wartest'], correct: 0 },
+                { q: '___ aufmerksam!', answers: ['Sei', 'Sind Sie', 'Seid', 'Bist'], correct: 0 }
+            ],
+            hannover: [
+                { q: 'Ich bleibe zu Hause, ___ es regnet.', answers: ['weil', 'dass', 'wenn', 'ob'], correct: 0 },
+                { q: 'Er sagt, ___ er müde ist.', answers: ['dass', 'weil', 'wenn', 'ob'], correct: 0 },
+                { q: '___ du Zeit hast, komm vorbei!', answers: ['Wenn', 'Weil', 'Dass', 'Ob'], correct: 0 },
+                { q: 'Ich weiß nicht, ___ er kommt.', answers: ['ob', 'dass', 'weil', 'wenn'], correct: 0 },
+                { q: 'Sie lernt Deutsch, ___ sie arbeiten will.', answers: ['weil', 'dass', 'wenn', 'ob'], correct: 0 },
+                { q: 'Ich hoffe, ___ das Wetter gut wird.', answers: ['dass', 'weil', 'wenn', 'ob'], correct: 0 },
+                { q: '___ ich Geld habe, reise ich.', answers: ['Wenn', 'Weil', 'Dass', 'Ob'], correct: 0 },
+                { q: 'Er fragt, ___ du mitkommen willst.', answers: ['ob', 'dass', 'weil', 'wenn'], correct: 0 },
+                { q: 'Wir kochen, ___ wir Hunger haben.', answers: ['weil', 'dass', 'wenn', 'ob'], correct: 0 },
+                { q: 'Ich glaube, ___ es klappt.', answers: ['dass', 'weil', 'wenn', 'ob'], correct: 0 },
+                { q: '___ es kalt ist, ziehe ich einen Mantel an.', answers: ['Wenn', 'Weil', 'Dass', 'Ob'], correct: 0 },
+                { q: 'Sie weiß nicht, ___ er die Wahrheit sagt.', answers: ['ob', 'dass', 'weil', 'wenn'], correct: 0 },
+                { q: 'Ich bin glücklich, ___ ich Freunde habe.', answers: ['weil', 'dass', 'wenn', 'ob'], correct: 0 },
+                { q: 'Er denkt, ___ er gewinnt.', answers: ['dass', 'weil', 'wenn', 'ob'], correct: 0 },
+                { q: '___ du fertig bist, gehen wir.', answers: ['Wenn', 'Weil', 'Dass', 'Ob'], correct: 0 }
+            ],
+            nuernberg: [
+                { q: 'Ich ___ gerne mehr Geld.', answers: ['hätte', 'hättest', 'hätten', 'hättet'], correct: 0 },
+                { q: 'Er ___ nach Italien fahren.', answers: ['würde', 'würdest', 'würden', 'würdet'], correct: 0 },
+                { q: 'Wir ___ das machen, wenn wir könnten.', answers: ['würden', 'würde', 'würdest', 'würdet'], correct: 0 },
+                { q: '___ du mir helfen?', answers: ['Könntest', 'Könnte', 'Könnten', 'Könntet'], correct: 0 },
+                { q: 'Sie ___ glücklich sein.', answers: ['wäre', 'wärst', 'wären', 'wärt'], correct: 0 },
+                { q: 'Ich ___ das nie tun.', answers: ['würde', 'würdest', 'würden', 'würdet'], correct: 0 },
+                { q: 'Er ___ gerne Nürnberger Lebkuchen.', answers: ['äße', 'äßest', 'äßen', 'äßet'], correct: 0 },
+                { q: 'Wir ___ mehr Zeit brauchen.', answers: ['würden', 'würde', 'würdest', 'würdet'], correct: 0 },
+                { q: '___ ihr mitkommen?', answers: ['Würdet', 'Würde', 'Würdest', 'Würden'], correct: 0 },
+                { q: 'Sie (pl.) ___ besser vorbereitet sein.', answers: ['sollten', 'sollte', 'solltest', 'solltet'], correct: 0 },
+                { q: 'Du ___ das verstehen.', answers: ['könntest', 'könnte', 'könnten', 'könntet'], correct: 0 },
+                { q: 'Ich ___ das nicht glauben.', answers: ['würde', 'würdest', 'würden', 'würdet'], correct: 0 },
+                { q: 'Er ___ gerne reich sein.', answers: ['wäre', 'wärst', 'wären', 'wärt'], correct: 0 },
+                { q: 'Wir ___ mehr Sport machen.', answers: ['sollten', 'sollte', 'solltest', 'solltet'], correct: 0 },
+                { q: 'Sie ___ das auch tun.', answers: ['würde', 'würdest', 'würden', 'würdet'], correct: 0 }
+            ],
+            duesseldorf: [
+                { q: 'Ich ___ morgen nach Düsseldorf fahren.', answers: ['werde', 'wirst', 'wird', 'werden'], correct: 0 },
+                { q: 'Er ___ den Rheinturm besuchen.', answers: ['wird', 'werde', 'wirst', 'werden'], correct: 0 },
+                { q: 'Wir ___ Altbier trinken.', answers: ['werden', 'werde', 'wirst', 'wird'], correct: 0 },
+                { q: 'Du ___ einkaufen gehen.', answers: ['wirst', 'werde', 'wird', 'werden'], correct: 0 },
+                { q: 'Sie ___ Japanisch lernen.', answers: ['wird', 'werde', 'wirst', 'werden'], correct: 0 },
+                { q: 'Ich ___ am Rhein spazieren.', answers: ['werde', 'wirst', 'wird', 'werden'], correct: 0 },
+                { q: 'Er ___ Fotos machen.', answers: ['wird', 'werde', 'wirst', 'werden'], correct: 0 },
+                { q: 'Wir ___ ins Museum gehen.', answers: ['werden', 'werde', 'wirst', 'wird'], correct: 0 },
+                { q: 'Ihr ___ die Stadt erkunden.', answers: ['werdet', 'werde', 'wirst', 'wird'], correct: 0 },
+                { q: 'Sie (pl.) ___ spät ankommen.', answers: ['werden', 'werde', 'wirst', 'wird'], correct: 0 },
+                { q: 'Du ___ neue Freunde finden.', answers: ['wirst', 'werde', 'wird', 'werden'], correct: 0 },
+                { q: 'Ich ___ viel erleben.', answers: ['werde', 'wirst', 'wird', 'werden'], correct: 0 },
+                { q: 'Er ___ fleißig arbeiten.', answers: ['wird', 'werde', 'wirst', 'werden'], correct: 0 },
+                { q: 'Wir ___ zusammen kochen.', answers: ['werden', 'werde', 'wirst', 'wird'], correct: 0 },
+                { q: 'Sie ___ erfolgreich sein.', answers: ['wird', 'werde', 'wirst', 'werden'], correct: 0 }
+            ],
+            heidelberg: [
+                { q: 'Das Schloss ist ___ als die Brücke.', answers: ['älter', 'alt', 'am ältesten', 'ältest'], correct: 0 },
+                { q: 'Der Neckar ist ___ als der Rhein.', answers: ['kürzer', 'kurz', 'am kürzesten', 'kürzest'], correct: 0 },
+                { q: 'Die Universität ist die ___ in Deutschland.', answers: ['älteste', 'alt', 'älter', 'ältesten'], correct: 0 },
+                { q: 'Heidelberg ist ___ als Berlin.', answers: ['kleiner', 'klein', 'am kleinsten', 'kleinst'], correct: 0 },
+                { q: 'Der Philosophenweg ist ___ als gedacht.', answers: ['länger', 'lang', 'am längsten', 'längst'], correct: 0 },
+                { q: 'Das Wetter ist heute ___ als gestern.', answers: ['schöner', 'schön', 'am schönsten', 'schönst'], correct: 0 },
+                { q: 'Das ist der ___ Berg hier.', answers: ['höchste', 'hoch', 'höher', 'höchsten'], correct: 0 },
+                { q: 'Die Altstadt ist ___ als das Neuenheim.', answers: ['romantischer', 'romantisch', 'am romantischsten', 'romantischst'], correct: 0 },
+                { q: 'Das Hotel ist das ___ in der Stadt.', answers: ['teuerste', 'teuer', 'teurer', 'teuersten'], correct: 0 },
+                { q: 'Der Sommer ist ___ als der Winter.', answers: ['wärmer', 'warm', 'am wärmsten', 'wärmst'], correct: 0 },
+                { q: 'Das ist die ___ Straße.', answers: ['schmalste', 'schmal', 'schmaler', 'schmalsten'], correct: 0 },
+                { q: 'Deutsch ist ___ als erwartet.', answers: ['schwieriger', 'schwierig', 'am schwierigsten', 'schwierigst'], correct: 0 },
+                { q: 'Das Essen ist das ___ hier.', answers: ['beste', 'gut', 'besser', 'besten'], correct: 0 },
+                { q: 'Die Kirche ist ___ als das Rathaus.', answers: ['größer', 'groß', 'am größten', 'größt'], correct: 0 },
+                { q: 'Das ist der ___ Tag.', answers: ['schönste', 'schön', 'schöner', 'schönsten'], correct: 0 }
+            ],
+            freiburg: [
+                { q: '___ Stadt gefällt mir.', answers: ['Deine', 'Deinen', 'Deinem', 'Deiner'], correct: 0 },
+                { q: 'Ich sehe ___ Freunde.', answers: ['meine', 'meinen', 'meinem', 'meiner'], correct: 0 },
+                { q: 'Wo ist ___ Fahrrad?', answers: ['dein', 'deinen', 'deinem', 'deiner'], correct: 0 },
+                { q: 'Er besucht ___ Familie.', answers: ['seine', 'seinen', 'seinem', 'seiner'], correct: 0 },
+                { q: 'Wir lieben ___ Heimat.', answers: ['unsere', 'unseren', 'unserem', 'unserer'], correct: 0 },
+                { q: 'Ich treffe ___ Bruder.', answers: ['meinen', 'meine', 'meinem', 'meiner'], correct: 0 },
+                { q: 'Das ist ___ Schwester.', answers: ['meine', 'meinen', 'meinem', 'meiner'], correct: 0 },
+                { q: 'Er kennt ___ Eltern.', answers: ['meine', 'meinen', 'meinem', 'meiner'], correct: 0 },
+                { q: 'Wir fahren mit ___ Auto.', answers: ['unserem', 'unseren', 'unsere', 'unserer'], correct: 0 },
+                { q: '___ Kinder spielen hier.', answers: ['Ihre', 'Ihren', 'Ihrem', 'Ihrer'], correct: 0 },
+                { q: 'Du liebst ___ Stadt.', answers: ['deine', 'deinen', 'deinem', 'deiner'], correct: 0 },
+                { q: 'Ich helfe ___ Mutter.', answers: ['meiner', 'meinen', 'meine', 'meinem'], correct: 0 },
+                { q: 'Er dankt ___ Vater.', answers: ['seinem', 'seinen', 'seine', 'seiner'], correct: 0 },
+                { q: 'Wir suchen ___ Hund.', answers: ['unseren', 'unsere', 'unserem', 'unserer'], correct: 0 },
+                { q: 'Sie besuchen ___ Großeltern.', answers: ['ihre', 'ihren', 'ihrem', 'ihrer'], correct: 0 }
+            ],
+            potsdam: [
+                { q: 'Ich ___ gestern im Schloss Sanssouci.', answers: ['war', 'bin', 'habe', 'werde'], correct: 0 },
+                { q: 'Er ___ Deutsch sprechen.', answers: ['kann', 'könnte', 'konnte', 'gekonnt'], correct: 0 },
+                { q: 'Wir ___ nach Berlin gefahren.', answers: ['sind', 'haben', 'waren', 'werden'], correct: 0 },
+                { q: 'Du ___ mir helfen!', answers: ['sollst', 'solltest', 'sollte', 'sollen'], correct: 0 },
+                { q: 'Sie ___ den Garten besucht.', answers: ['hat', 'ist', 'hatte', 'wird'], correct: 0 },
+                { q: 'Ich lege das Buch ___ den Tisch.', answers: ['auf', 'in', 'an', 'über'], correct: 0 },
+                { q: '___ die Tür!', answers: ['Öffne', 'Öffnen', 'Öffnest', 'Öffnet'], correct: 0 },
+                { q: 'Er sagt, ___ er kommt.', answers: ['dass', 'weil', 'wenn', 'ob'], correct: 0 },
+                { q: 'Ich ___ gerne mehr Zeit haben.', answers: ['würde', 'werde', 'hätte', 'bin'], correct: 0 },
+                { q: 'Das Schloss ist ___ als das Rathaus.', answers: ['größer', 'groß', 'am größten', 'größten'], correct: 0 },
+                { q: 'Ich sehe ___ Freunde.', answers: ['meine', 'meinen', 'meinem', 'meiner'], correct: 0 },
+                { q: 'Er ___ mir bei der Arbeit.', answers: ['hilft', 'helft', 'helfen', 'half'], correct: 0 },
+                { q: '___ du Zeit hast, komm vorbei.', answers: ['Wenn', 'Weil', 'Dass', 'Ob'], correct: 0 },
+                { q: 'Wir ___ morgen ins Kino gehen.', answers: ['werden', 'würden', 'wären', 'hätten'], correct: 0 },
+                { q: 'Sie ___ sich für Geschichte.', answers: ['interessiert', 'interessieren', 'interessiere', 'interessierst'], correct: 0 }
+            ]
+        };
+
+        // Generate Game Code
+        function generateGameCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 4; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        // Show Screen
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Select Mode
+        function selectMode(mode) {
+            gameMode = mode;
+            if (mode === 'host') {
+                showRoomSelection();
+                showScreen('hostSetupScreen');
+            } else {
+                showScreen('playerJoinScreen');
+            }
+        }
+
+        // Show Room Selection
+        function showRoomSelection() {
+            const container = document.getElementById('roomSelectionHost');
+            container.innerHTML = '';
+            
+            rooms.forEach(room => {
+                const card = document.createElement('div');
+                card.className = 'room-card';
+                card.innerHTML = `
+                    <div class="lock-icon">${room.icon}</div>
+                    <div class="room-icon">🏛️</div>
+                    <div class="room-name">${room.name}</div>
+                    <div class="room-theme">${room.theme}</div>
+                `;
+                card.onclick = () => selectRoom(room.id, card);
+                container.appendChild(card);
+            });
+        }
+
+        // Select Room
+        function selectRoom(roomId, cardElement) {
+            selectedRoom = roomId;
+            document.querySelectorAll('.room-card').forEach(c => c.classList.remove('selected'));
+            cardElement.classList.add('selected');
+        }
+
+        // Create Game
+        function createGame() {
+            if (!selectedRoom) {
+                alert('Bitte wähle einen Escape Room!');
+                return;
+            }
+
+            gameCode = generateGameCode();
+            const questions = questionsDB[selectedRoom];
+            
+            database.ref('games-escape/' + gameCode).set({
+                status: 'waiting',
+                room: selectedRoom,
+                currentQuestion: 0,
+                questions: questions,
+                host: true,
+                createdAt: Date.now()
+            });
+
+            document.getElementById('gameCodeDisplay').textContent = gameCode;
+            listenToPlayers();
+            showScreen('hostLobbyScreen');
+        }
+
+        // Listen to Players
+        function listenToPlayers() {
+            database.ref('games-escape/' + gameCode + '/players').on('value', (snapshot) => {
+                const players = snapshot.val() || {};
+                updatePlayersList(players, 'playersList');
+                
+                if (gameMode === 'player') {
+                    updatePlayersList(players, 'playersListPlayer');
+                }
+            });
+        }
+
+        // Update Players List
+        function updatePlayersList(players, elementId) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = '';
+            
+            Object.entries(players).forEach(([id, player]) => {
+                const item = document.createElement('div');
+                item.className = 'player-item';
+                item.innerHTML = `
+                    <div class="player-name">${player.name}</div>
+                    <div class="player-score">${player.score || 0} Punkte</div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Join Game
+        function joinGame() {
+            const name = document.getElementById('playerName').value.trim();
+            const code = document.getElementById('gameCodeInput').value.toUpperCase().trim();
+            
+            if (!name) {
+                showError('Bitte gib deinen Agenten-Namen ein!');
+                return;
+            }
+            
+            if (code.length !== 4) {
+                showError('Der Code muss 4 Zeichen haben!');
+                return;
+            }
+
+            database.ref('games-escape/' + code).once('value').then((snapshot) => {
+                if (!snapshot.exists()) {
+                    showError('Mission nicht gefunden! Prüfe den Code.');
+                    return;
+                }
+
+                const game = snapshot.val();
+                if (game.status !== 'waiting') {
+                    showError('Die Mission hat bereits begonnen!');
+                    return;
+                }
+
+                gameCode = code;
+                playerName = name;
+                playerId = 'player_' + Date.now();
+
+                database.ref('games-escape/' + gameCode + '/players/' + playerId).set({
+                    name: playerName,
+                    score: 0,
+                    joinedAt: Date.now()
+                });
+
+                document.getElementById('playerGameCode').textContent = gameCode;
+                listenToPlayers();
+                listenToGameStatus();
+                showScreen('playerWaitingScreen');
+            });
+        }
+
+        // Show Error
+        function showError(message) {
+            const errorDiv = document.getElementById('joinError');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Start Quiz
+        function startQuiz() {
+            database.ref('games-escape/' + gameCode).update({
+                status: 'playing',
+                currentQuestion: 0,
+                startedAt: Date.now()
+            });
+
+            currentQuestionIndex = 0;
+            showQuestionHost();
+            showScreen('quizScreenHost');
+        }
+
+        // Listen to Game Status
+        function listenToGameStatus() {
+            database.ref('games-escape/' + gameCode).on('value', (snapshot) => {
+                const game = snapshot.val();
+                if (!game) return;
+
+                if (game.status === 'playing' && gameMode === 'player') {
+                    showQuestionPlayer(game);
+                } else if (game.status === 'finished') {
+                    showResults();
+                }
+            });
+        }
+
+        // Show Question (Host)
+        function showQuestionHost() {
+            database.ref('games-escape/' + gameCode + '/questions').once('value').then((snapshot) => {
+                const questions = snapshot.val();
+                if (!questions || currentQuestionIndex >= questions.length) {
+                    endGame();
+                    return;
+                }
+
+                const question = questions[currentQuestionIndex];
+                document.getElementById('questionNumberHost').textContent = `Rätsel ${currentQuestionIndex + 1}/${questions.length}`;
+                document.getElementById('questionTextHost').textContent = question.q;
+
+                const answersGrid = document.getElementById('answersGridHost');
+                answersGrid.innerHTML = '';
+                
+                question.answers.forEach((answer, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'answer-btn';
+                    btn.textContent = answer;
+                    btn.onclick = () => {};
+                    answersGrid.appendChild(btn);
+                });
+
+                startTimer();
+                updateLiveLeaderboard();
+            });
+        }
+
+        // Show Question (Player)
+        function showQuestionPlayer(game) {
+            if (game.currentQuestion !== currentQuestionIndex) {
+                currentQuestionIndex = game.currentQuestion;
+                hasAnswered = false;
+                
+                const questions = game.questions;
+                const question = questions[currentQuestionIndex];
+                
+                document.getElementById('questionNumberPlayer').textContent = `Rätsel ${currentQuestionIndex + 1}/${questions.length}`;
+                document.getElementById('questionTextPlayer').textContent = question.q;
+                document.getElementById('feedbackMessage').textContent = '';
+
+                const answersGrid = document.getElementById('answersGridPlayer');
+                answersGrid.innerHTML = '';
+                
+                question.answers.forEach((answer, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'answer-btn';
+                    btn.textContent = answer;
+                    btn.onclick = () => submitAnswer(index, question.correct);
+                    answersGrid.appendChild(btn);
+                });
+
+                showScreen('quizScreenPlayer');
+                startTimerPlayer();
+            }
+        }
+
+        // Submit Answer
+        function submitAnswer(answerIndex, correctIndex) {
+            if (hasAnswered) return;
+            hasAnswered = true;
+
+            const buttons = document.querySelectorAll('#answersGridPlayer .answer-btn');
+            buttons.forEach(btn => btn.onclick = null);
+
+            const isCorrect = answerIndex === correctIndex;
+            
+            buttons[answerIndex].classList.add('selected');
+            
+            setTimeout(() => {
+                buttons[correctIndex].classList.add('correct');
+                if (!isCorrect) {
+                    buttons[answerIndex].classList.add('wrong');
+                }
+
+                if (isCorrect) {
+                    const points = Math.max(100, 1500 - (15 - timeLeft) * 100);
+                    playerScore += points;
+                    document.getElementById('feedbackMessage').innerHTML = `✅ Richtig! +${points} Punkte`;
+                    document.getElementById('feedbackMessage').style.color = '#06D6A0';
+                } else {
+                    document.getElementById('feedbackMessage').innerHTML = `❌ Falsch!`;
+                    document.getElementById('feedbackMessage').style.color = '#E63946';
+                }
+
+                database.ref('games-escape/' + gameCode + '/players/' + playerId).update({
+                    score: playerScore
+                });
+            }, 300);
+        }
+
+        // Start Timer
+        function startTimer() {
+            timeLeft = 15;
+            document.getElementById('timerHost').textContent = timeLeft;
+            
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timerHost').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    showNextButton();
+                }
+            }, 1000);
+        }
+
+        // Start Timer (Player)
+        function startTimerPlayer() {
+            timeLeft = 15;
+            document.getElementById('timerPlayer').textContent = timeLeft;
+            
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timerPlayer').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                }
+            }, 1000);
+        }
+
+        // Show Next Button
+        function showNextButton() {
+            database.ref('games-escape/' + gameCode + '/questions').once('value').then((snapshot) => {
+                const questions = snapshot.val();
+                if (currentQuestionIndex < questions.length - 1) {
+                    document.getElementById('nextQuestionBtn').style.display = 'inline-block';
+                } else {
+                    document.getElementById('endGameBtn').style.display = 'inline-block';
+                }
+            });
+        }
+
+        // Next Question
+        function nextQuestion() {
+            currentQuestionIndex++;
+            document.getElementById('nextQuestionBtn').style.display = 'none';
+            
+            database.ref('games-escape/' + gameCode).update({
+                currentQuestion: currentQuestionIndex
+            });
+            
+            showQuestionHost();
+        }
+
+        // Update Live Leaderboard
+        function updateLiveLeaderboard() {
+            database.ref('games-escape/' + gameCode + '/players').once('value').then((snapshot) => {
+                const players = snapshot.val() || {};
+                const sorted = Object.entries(players)
+                    .sort((a, b) => (b[1].score || 0) - (a[1].score || 0));
+                
+                const container = document.getElementById('liveLeaderboard');
+                container.innerHTML = '';
+                
+                sorted.forEach(([id, player], index) => {
+                    const item = document.createElement('div');
+                    item.className = `leaderboard-item rank-${index + 1}`;
+                    
+                    const medals = ['🥇', '🥈', '🥉'];
+                    const badge = index < 3 ? medals[index] : `${index + 1}.`;
+                    
+                    item.innerHTML = `
+                        <div class="rank-badge">${badge}</div>
+                        <div class="player-info">
+                            <div class="player-name">${player.name}</div>
+                        </div>
+                        <div class="player-score-big">${player.score || 0}</div>
+                    `;
+                    container.appendChild(item);
+                });
+            });
+        }
+
+        // End Game
+        function endGame() {
+            clearInterval(timerInterval);
+            database.ref('games-escape/' + gameCode).update({
+                status: 'finished',
+                finishedAt: Date.now()
+            });
+            showResults();
+        }
+
+        // Show Results
+        function showResults() {
+            database.ref('games-escape/' + gameCode + '/players').once('value').then((snapshot) => {
+                const players = snapshot.val() || {};
+                const sorted = Object.entries(players)
+                    .sort((a, b) => (b[1].score || 0) - (a[1].score || 0));
+                
+                const container = document.getElementById('finalLeaderboard');
+                container.innerHTML = '';
+                
+                sorted.forEach(([id, player], index) => {
+                    const item = document.createElement('div');
+                    item.className = `leaderboard-item rank-${index + 1}`;
+                    
+                    const medals = ['🥇', '🥈', '🥉'];
+                    const badge = index < 3 ? medals[index] : `${index + 1}.`;
+                    
+                    item.innerHTML = `
+                        <div class="rank-badge">${badge}</div>
+                        <div class="player-info">
+                            <div class="player-name">${player.name}</div>
+                        </div>
+                        <div class="player-score-big">${player.score || 0}</div>
+                    `;
+                    container.appendChild(item);
+                });
+                
+                showScreen('resultsScreen');
+            });
+        }
+
+        // Cancel Game
+        function cancelGame() {
+            if (confirm('Möchtest du die Mission wirklich abbrechen?')) {
+                database.ref('games-escape/' + gameCode).remove();
+                location.reload();
+            }
+        }
+
+        // Back to Start
+        function backToStart() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>

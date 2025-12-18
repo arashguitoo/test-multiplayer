@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏠 Die WG-Challenge - Multiplayer Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.5em;
+            text-align: center;
+            margin: 30px 0;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            color: #7DD3FC;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1a1a2e;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #7DD3FC, #3B82F6);
+        }
+
+        .mode-selection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .mode-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-card:hover {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: #FFD700;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .mode-card h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2em;
+            margin: 20px 0;
+            color: #FFD700;
+        }
+
+        .input-group {
+            margin: 30px 0;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #7DD3FC;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .game-code-display {
+            background: rgba(255, 215, 0, 0.1);
+            border: 3px solid #FFD700;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .game-code-display h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #7DD3FC;
+        }
+
+        .game-code {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 4em;
+            color: #FFD700;
+            letter-spacing: 15px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .players-list {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .player-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #FFD700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .player-name {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .player-score {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1a1a2e;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .room-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .room-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(125, 211, 252, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .room-card:hover {
+            background: rgba(125, 211, 252, 0.1);
+            border-color: #7DD3FC;
+            transform: scale(1.05);
+        }
+
+        .room-card.selected {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #FFD700;
+        }
+
+        .room-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .room-name {
+            font-weight: 600;
+            margin: 10px 0 5px 0;
+        }
+
+        .room-theme {
+            font-size: 0.85em;
+            color: #7DD3FC;
+        }
+
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            background: linear-gradient(135deg, #7DD3FC, #3B82F6);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .timer {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1a1a2e;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.5em;
+        }
+
+        .question-text {
+            font-size: 1.5em;
+            margin: 30px 0;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .answer-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(125, 211, 252, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            font-size: 1.1em;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .answer-btn:hover {
+            background: rgba(125, 211, 252, 0.1);
+            border-color: #7DD3FC;
+            transform: scale(1.02);
+        }
+
+        .answer-btn.selected {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #FFD700;
+        }
+
+        .answer-btn.correct {
+            background: rgba(6, 214, 160, 0.3);
+            border-color: #06D6A0;
+        }
+
+        .answer-btn.wrong {
+            background: rgba(230, 57, 70, 0.3);
+            border-color: #E63946;
+        }
+
+        .leaderboard {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .leaderboard-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #FFD700;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border-left: 4px solid #7DD3FC;
+        }
+
+        .leaderboard-item.rank-1 {
+            border-left-color: #FFD700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .leaderboard-item.rank-2 {
+            border-left-color: #C0C0C0;
+        }
+
+        .leaderboard-item.rank-3 {
+            border-left-color: #CD7F32;
+        }
+
+        .rank-badge {
+            font-size: 2em;
+            margin-right: 20px;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-score-big {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1a1a2e;
+            padding: 10px 25px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.3em;
+        }
+
+        .waiting-message {
+            text-align: center;
+            font-size: 1.3em;
+            color: #7DD3FC;
+            margin: 50px 0;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .error-message {
+            background: rgba(230, 57, 70, 0.2);
+            border: 2px solid #E63946;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            color: #E63946;
+        }
+
+        .success-message {
+            background: rgba(6, 214, 160, 0.2);
+            border: 2px solid #06D6A0;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            color: #06D6A0;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .mode-selection {
+                grid-template-columns: 1fr;
+            }
+
+            .answers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .game-code {
+                font-size: 2.5em;
+                letter-spacing: 8px;
+            }
+
+            .room-selection {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="startScreen" class="screen active">
+            <h1>🏠 Die WG-Challenge</h1>
+            <p class="subtitle">Wer wird der beste Mitbewohner?</p>
+            
+            <div class="mode-selection">
+                <div class="mode-card" onclick="selectMode('host')">
+                    <div style="font-size: 4em;">👨‍🏫</div>
+                    <h2>Host</h2>
+                    <p>Spiel erstellen & moderieren</p>
+                </div>
+                
+                <div class="mode-card" onclick="selectMode('player')">
+                    <div style="font-size: 4em;">🎮</div>
+                    <h2>Spieler</h2>
+                    <p>Mit Code beitreten</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Host Setup Screen -->
+        <div id="hostSetupScreen" class="screen">
+            <h1>🏠 Spiel erstellen</h1>
+            
+            <div class="input-group">
+                <label>Wähle einen Raum:</label>
+                <div id="roomSelectionHost" class="room-selection"></div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="btn" onclick="createGame()">🎮 Spiel starten</button>
+                <button class="btn btn-secondary" onclick="backToStart()" style="margin-left: 10px;">↩️ Zurück</button>
+            </div>
+        </div>
+
+        <!-- Host Lobby Screen -->
+        <div id="hostLobbyScreen" class="screen">
+            <h1>🏠 Warte auf Spieler</h1>
+            
+            <div class="game-code-display">
+                <h2>Spiel-Code:</h2>
+                <div class="game-code" id="gameCodeDisplay"></div>
+            </div>
+
+            <div class="players-list">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #7DD3FC;">Angemeldete Spieler:</h2>
+                <div id="playersList"></div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="btn" onclick="startQuiz()">▶️ Quiz starten</button>
+                <button class="btn btn-secondary" onclick="cancelGame()" style="margin-left: 10px;">❌ Abbrechen</button>
+            </div>
+        </div>
+
+        <!-- Player Join Screen -->
+        <div id="playerJoinScreen" class="screen">
+            <h1>🎮 Spiel beitreten</h1>
+            
+            <div class="input-group">
+                <label>Dein Name:</label>
+                <input type="text" id="playerName" placeholder="z.B. Max Mustermann" maxlength="20">
+            </div>
+
+            <div class="input-group">
+                <label>Spiel-Code:</label>
+                <input type="text" id="gameCodeInput" placeholder="z.B. ABCD" maxlength="4">
+            </div>
+
+            <div id="joinError" class="error-message" style="display: none;"></div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="btn" onclick="joinGame()">🚀 Beitreten</button>
+                <button class="btn btn-secondary" onclick="backToStart()" style="margin-left: 10px;">↩️ Zurück</button>
+            </div>
+        </div>
+
+        <!-- Player Waiting Screen -->
+        <div id="playerWaitingScreen" class="screen">
+            <h1>🏠 WG-Challenge</h1>
+            
+            <div class="game-code-display">
+                <h2>Spiel-Code:</h2>
+                <div class="game-code" id="playerGameCode"></div>
+            </div>
+
+            <div class="waiting-message pulse">
+                <p>⏳ Warte auf Start...</p>
+                <p style="font-size: 0.9em; margin-top: 20px; color: rgba(255,255,255,0.6);">
+                    Der Host startet das Quiz gleich!
+                </p>
+            </div>
+
+            <div class="players-list">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #7DD3FC;">Mitspieler:</h2>
+                <div id="playersListPlayer"></div>
+            </div>
+        </div>
+
+        <!-- Quiz Screen (Host) -->
+        <div id="quizScreenHost" class="screen">
+            <div class="question-container">
+                <div class="question-header">
+                    <div class="question-number" id="questionNumberHost">Frage 1/20</div>
+                    <div class="timer" id="timerHost">10</div>
+                </div>
+
+                <div class="question-text" id="questionTextHost"></div>
+
+                <div class="answers-grid" id="answersGridHost"></div>
+
+                <div class="leaderboard">
+                    <div class="leaderboard-title">🏆 Live-Rangliste</div>
+                    <div id="liveLeaderboard"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn" onclick="nextQuestion()" id="nextQuestionBtn" style="display: none;">▶️ Nächste Frage</button>
+                    <button class="btn" onclick="endGame()" id="endGameBtn" style="display: none;">🏁 Spiel beenden</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Screen (Player) -->
+        <div id="quizScreenPlayer" class="screen">
+            <div class="question-container">
+                <div class="question-header">
+                    <div class="question-number" id="questionNumberPlayer">Frage 1/20</div>
+                    <div class="timer" id="timerPlayer">10</div>
+                </div>
+
+                <div class="question-text" id="questionTextPlayer"></div>
+
+                <div class="answers-grid" id="answersGridPlayer"></div>
+
+                <div id="feedbackMessage" style="text-align: center; margin-top: 20px; font-size: 1.3em; font-weight: 700;"></div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="screen">
+            <h1>🏆 Endergebnis</h1>
+            
+            <div class="leaderboard">
+                <div class="leaderboard-title">Die besten Mitbewohner:</div>
+                <div id="finalLeaderboard"></div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="btn" onclick="location.reload()">🔄 Neues Spiel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",
+            authDomain: "lern-deutsch-arash.firebaseapp.com",
+            databaseURL: "https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "lern-deutsch-arash",
+            storageBucket: "lern-deutsch-arash.firebasestorage.app",
+            messagingSenderId: "845503292114",
+            appId: "1:845503292114:web:f76ab5fcde1e978d00c30b"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Game State
+        let gameMode = '';
+        let gameCode = '';
+        let playerId = '';
+        let playerName = '';
+        let currentQuestionIndex = 0;
+        let playerScore = 0;
+        let selectedRoom = '';
+        let timerInterval;
+        let timeLeft = 10;
+        let hasAnswered = false;
+
+        // Rooms Definition
+        const rooms = [
+            { id: 'kueche', icon: '🍳', name: 'Küche', theme: 'Präsens' },
+            { id: 'bad', icon: '🚿', name: 'Bad', theme: 'Reflexivverben' },
+            { id: 'wohnzimmer', icon: '🛋️', name: 'Wohnzimmer', theme: 'Modalverben' },
+            { id: 'schlafzimmer', icon: '🛏️', name: 'Schlafzimmer', theme: 'Perfekt' },
+            { id: 'balkon', icon: '🌻', name: 'Balkon', theme: 'Akkusativ' },
+            { id: 'flur', icon: '🚪', name: 'Flur', theme: 'Dativ' },
+            { id: 'keller', icon: '📦', name: 'Keller', theme: 'Präteritum' },
+            { id: 'garten', icon: '🌳', name: 'Garten', theme: 'Wechselpräp.' },
+            { id: 'garage', icon: '🚗', name: 'Garage', theme: 'Imperativ' },
+            { id: 'dachboden', icon: '🏚️', name: 'Dachboden', theme: 'Nebensätze' }
+        ];
+
+        // Questions Database
+        const questionsDB = {
+            kueche: [
+                { q: 'Ich ___ jeden Morgen Kaffee.', answers: ['trinke', 'trinkst', 'trinkt', 'trinken'], correct: 0 },
+                { q: 'Er ___ gerade das Abendessen.', answers: ['kocht', 'kochen', 'koche', 'kochst'], correct: 0 },
+                { q: 'Wir ___ oft Pizza.', answers: ['essen', 'esst', 'isst', 'esse'], correct: 0 },
+                { q: 'Sie (pl.) ___ im Supermarkt.', answers: ['kaufen', 'kauft', 'kaufe', 'kaufst'], correct: 0 },
+                { q: 'Du ___ die Spülmaschine.', answers: ['räumst auf', 'räumt auf', 'räume auf', 'räumen auf'], correct: 0 },
+                { q: 'Ich ___ den Tisch.', answers: ['decke', 'deckst', 'deckt', 'decken'], correct: 0 },
+                { q: 'Maria ___ den Kühlschrank.', answers: ['öffnet', 'öffne', 'öffnest', 'öffnen'], correct: 0 },
+                { q: 'Ihr ___ zusammen.', answers: ['kocht', 'kochen', 'koche', 'kochst'], correct: 0 },
+                { q: 'Der Herd ___ noch heiß.', answers: ['ist', 'sind', 'bist', 'bin'], correct: 0 },
+                { q: 'Wir ___ Gemüse.', answers: ['schneiden', 'schneide', 'schneidest', 'schneidet'], correct: 0 },
+                { q: 'Sie (sg.) ___ den Müll.', answers: ['trennt', 'trennen', 'trenne', 'trennst'], correct: 0 },
+                { q: 'Ich ___ das Geschirr.', answers: ['spüle', 'spülst', 'spült', 'spülen'], correct: 0 },
+                { q: 'Du ___ im Kühlschrank.', answers: ['suchst', 'suche', 'sucht', 'suchen'], correct: 0 },
+                { q: 'Er ___ Brot.', answers: ['backt', 'backe', 'backst', 'backen'], correct: 0 },
+                { q: 'Wir ___ Wasser.', answers: ['kochen', 'kocht', 'koche', 'kochst'], correct: 0 },
+                { q: 'Sie (pl.) ___ den Tisch ab.', answers: ['wischen', 'wischt', 'wische', 'wischst'], correct: 0 },
+                { q: 'Ich ___ Milch in den Kaffee.', answers: ['gebe', 'gibst', 'gibt', 'geben'], correct: 0 },
+                { q: 'Du ___ das Essen.', answers: ['würzt', 'würzen', 'würze', 'würzt'], correct: 0 },
+                { q: 'Das Essen ___ gut.', answers: ['schmeckt', 'schmecken', 'schmecke', 'schmeckst'], correct: 0 },
+                { q: 'Ihr ___ heute früh.', answers: ['esst', 'essen', 'esse', 'isst'], correct: 0 }
+            ],
+            bad: [
+                { q: 'Ich ___ jeden Morgen.', answers: ['dusche mich', 'duschst dich', 'duscht sich', 'duschen uns'], correct: 0 },
+                { q: 'Er ___ die Zähne.', answers: ['putzt sich', 'putze mich', 'putzt dich', 'putzen uns'], correct: 0 },
+                { q: 'Wir ___ vor dem Spiegel.', answers: ['kämmen uns', 'kämmt euch', 'kämme mich', 'kämmt sich'], correct: 0 },
+                { q: 'Du ___ das Gesicht.', answers: ['wäschst dir', 'wasche mir', 'wäscht sich', 'waschen uns'], correct: 0 },
+                { q: 'Sie (sg.) ___ die Haare.', answers: ['föhnt sich', 'föhne mich', 'föhnst dich', 'föhnen uns'], correct: 0 },
+                { q: 'Ich ___ morgens.', answers: ['rasiere mich', 'rasierst dich', 'rasiert sich', 'rasieren uns'], correct: 0 },
+                { q: 'Ihr ___ abends.', answers: ['wascht euch', 'waschen uns', 'wäscht sich', 'wasche mich'], correct: 0 },
+                { q: 'Er ___ vor dem Ausgehen.', answers: ['schminkt sich', 'schminke mich', 'schminkst dich', 'schminken uns'], correct: 0 },
+                { q: 'Wir ___ am Wochenende.', answers: ['entspannen uns', 'entspannt euch', 'entspanne mich', 'entspannt sich'], correct: 0 },
+                { q: 'Sie (pl.) ___ schnell.', answers: ['ziehen sich an', 'ziehe mich an', 'ziehst dich an', 'zieht sich an'], correct: 0 },
+                { q: 'Du ___ die Hände.', answers: ['trocknest dir', 'trockne mir', 'trocknet sich', 'trocknen uns'], correct: 0 },
+                { q: 'Ich ___ im Badezimmer.', answers: ['beeile mich', 'beeilst dich', 'beeilt sich', 'beeilen uns'], correct: 0 },
+                { q: 'Er ___ vor der Arbeit.', answers: ['duscht sich', 'dusche mich', 'duschst dich', 'duschen uns'], correct: 0 },
+                { q: 'Wir ___ die Fingernägel.', answers: ['schneiden uns', 'schneidet euch', 'schneide mir', 'schneidet sich'], correct: 0 },
+                { q: 'Sie (sg.) ___ im Spiegel.', answers: ['betrachtet sich', 'betrachte mich', 'betrachtest dich', 'betrachten uns'], correct: 0 },
+                { q: 'Ihr ___ nach dem Sport.', answers: ['duscht euch', 'duschen uns', 'dusche mich', 'duscht sich'], correct: 0 },
+                { q: 'Ich ___ die Haare.', answers: ['kämme mir', 'kämmst dir', 'kämmt sich', 'kämmen uns'], correct: 0 },
+                { q: 'Du ___ gemütlich.', answers: ['badest dich', 'bade mich', 'badet sich', 'baden uns'], correct: 0 },
+                { q: 'Er ___ fertig.', answers: ['macht sich', 'mache mich', 'machst dich', 'machen uns'], correct: 0 },
+                { q: 'Wir ___ auf den Tag.', answers: ['freuen uns', 'freut euch', 'freue mich', 'freut sich'], correct: 0 }
+            ],
+            wohnzimmer: [
+                { q: 'Ich ___ heute arbeiten.', answers: ['muss', 'musst', 'müssen', 'müsst'], correct: 0 },
+                { q: 'Er ___ gut Deutsch sprechen.', answers: ['kann', 'kannst', 'können', 'könnt'], correct: 0 },
+                { q: 'Wir ___ ins Kino gehen.', answers: ['wollen', 'will', 'willst', 'wollt'], correct: 0 },
+                { q: 'Du ___ nicht rauchen.', answers: ['darfst', 'darf', 'dürfen', 'dürft'], correct: 0 },
+                { q: 'Sie (sg.) ___ heute kochen.', answers: ['soll', 'sollst', 'sollen', 'sollt'], correct: 0 },
+                { q: 'Ich ___ ein neues Handy kaufen.', answers: ['möchte', 'möchtest', 'möchten', 'möchtet'], correct: 0 },
+                { q: 'Ihr ___ hier nicht parken.', answers: ['dürft', 'darf', 'darfst', 'dürfen'], correct: 0 },
+                { q: 'Er ___ sein Zimmer aufräumen.', answers: ['muss', 'musst', 'müssen', 'müsst'], correct: 0 },
+                { q: 'Wir ___ heute Abend fernsehen.', answers: ['können', 'kann', 'kannst', 'könnt'], correct: 0 },
+                { q: 'Sie (pl.) ___ morgen kommen.', answers: ['sollen', 'soll', 'sollst', 'sollt'], correct: 0 },
+                { q: 'Du ___ die Miete bezahlen.', answers: ['musst', 'muss', 'müssen', 'müsst'], correct: 0 },
+                { q: 'Ich ___ Klavier spielen.', answers: ['kann', 'kannst', 'können', 'könnt'], correct: 0 },
+                { q: 'Er ___ einen Kaffee trinken.', answers: ['möchte', 'möchtest', 'möchten', 'möchtet'], correct: 0 },
+                { q: 'Wir ___ pünktlich sein.', answers: ['müssen', 'muss', 'musst', 'müsst'], correct: 0 },
+                { q: 'Sie (sg.) ___ nicht laut sein.', answers: ['darf', 'darfst', 'dürfen', 'dürft'], correct: 0 },
+                { q: 'Ihr ___ beim Lernen helfen.', answers: ['sollt', 'soll', 'sollst', 'sollen'], correct: 0 },
+                { q: 'Ich ___ heute ausschlafen.', answers: ['will', 'willst', 'wollen', 'wollt'], correct: 0 },
+                { q: 'Du ___ Gitarre spielen.', answers: ['kannst', 'kann', 'können', 'könnt'], correct: 0 },
+                { q: 'Er ___ früher nach Hause.', answers: ['muss', 'musst', 'müssen', 'müsst'], correct: 0 },
+                { q: 'Wir ___ zusammen essen.', answers: ['wollen', 'will', 'willst', 'wollt'], correct: 0 }
+            ],
+            schlafzimmer: [
+                { q: 'Ich ___ gut ___.', answers: ['habe geschlafen', 'bin geschlafen', 'habe gegeschlafen', 'bin gegeschlafen'], correct: 0 },
+                { q: 'Er ___ spät ___.', answers: ['ist aufgewacht', 'hat aufgewacht', 'ist aufgewachen', 'hat aufgewachen'], correct: 0 },
+                { q: 'Wir ___ das Bett ___.', answers: ['haben gemacht', 'sind gemacht', 'haben gemachen', 'sind gemachen'], correct: 0 },
+                { q: 'Du ___ die Vorhänge ___.', answers: ['hast aufgemacht', 'bist aufgemacht', 'hast aufgemachen', 'bist aufgemachen'], correct: 0 },
+                { q: 'Sie (sg.) ___ das Fenster ___.', answers: ['hat geöffnet', 'ist geöffnet', 'hat geöffnen', 'ist geöffnen'], correct: 0 },
+                { q: 'Ich ___ früh ins Bett ___.', answers: ['bin gegangen', 'habe gegangen', 'bin gehen', 'habe gehen'], correct: 0 },
+                { q: 'Ihr ___ lange ___.', answers: ['habt geschlafen', 'seid geschlafen', 'habt gegeschlafen', 'seid gegeschlafen'], correct: 0 },
+                { q: 'Er ___ den Wecker ___.', answers: ['hat gestellt', 'ist gestellt', 'hat gegestellt', 'ist gegestellt'], correct: 0 },
+                { q: 'Wir ___ acht Stunden ___.', answers: ['haben geschlafen', 'sind geschlafen', 'haben gegeschlafen', 'sind gegeschlafen'], correct: 0 },
+                { q: 'Sie (pl.) ___ die Lampe ___.', answers: ['haben ausgemacht', 'sind ausgemacht', 'haben ausgemachen', 'sind ausgemachen'], correct: 0 },
+                { q: 'Du ___ ein Buch ___.', answers: ['hast gelesen', 'bist gelesen', 'hast gegelesen', 'bist gegelesen'], correct: 0 },
+                { q: 'Ich ___ den Schrank ___.', answers: ['habe aufgeräumt', 'bin aufgeräumt', 'habe aufgeräumen', 'bin aufgeräumen'], correct: 0 },
+                { q: 'Er ___ die Tür ___.', answers: ['hat zugemacht', 'ist zugemacht', 'hat zugemachen', 'ist zugemachen'], correct: 0 },
+                { q: 'Wir ___ neue Bettwäsche ___.', answers: ['haben gekauft', 'sind gekauft', 'haben gekaufen', 'sind gekaufen'], correct: 0 },
+                { q: 'Sie (sg.) ___ einen Traum ___.', answers: ['hat gehabt', 'ist gehabt', 'hat gegehaben', 'ist gegehaben'], correct: 0 },
+                { q: 'Ihr ___ die Heizung ___.', answers: ['habt angemacht', 'seid angemacht', 'habt angemachen', 'seid angemachen'], correct: 0 },
+                { q: 'Ich ___ im Schlafzimmer ___.', answers: ['habe gearbeitet', 'bin gearbeitet', 'habe gegearbeitet', 'bin gegearbeitet'], correct: 0 },
+                { q: 'Du ___ das Radio ___.', answers: ['hast ausgeschaltet', 'bist ausgeschaltet', 'hast ausgeschalen', 'bist ausgeschalen'], correct: 0 },
+                { q: 'Er ___ zu spät ___.', answers: ['ist aufgestanden', 'hat aufgestanden', 'ist aufgestehen', 'hat aufgestehen'], correct: 0 },
+                { q: 'Wir ___ alles ___.', answers: ['haben vorbereitet', 'sind vorbereitet', 'haben vorbereiten', 'sind vorbereiten'], correct: 0 }
+            ],
+            balkon: [
+                { q: 'Ich gieße ___ Blumen.', answers: ['die', 'den', 'dem', 'der'], correct: 0 },
+                { q: 'Er kauft ___ Pflanze.', answers: ['eine', 'einen', 'einem', 'einer'], correct: 0 },
+                { q: 'Wir sehen ___ Sonnenuntergang.', answers: ['den', 'die', 'das', 'dem'], correct: 0 },
+                { q: 'Du trägst ___ Stuhl raus.', answers: ['den', 'die', 'das', 'dem'], correct: 0 },
+                { q: 'Sie stellt ___ Tisch auf.', answers: ['den', 'die', 'das', 'dem'], correct: 0 },
+                { q: 'Ich habe ___ Balkon.', answers: ['einen', 'eine', 'ein', 'einem'], correct: 0 },
+                { q: 'Er öffnet ___ Tür.', answers: ['die', 'den', 'das', 'dem'], correct: 0 },
+                { q: 'Wir brauchen ___ Sonnenschirm.', answers: ['einen', 'eine', 'ein', 'einem'], correct: 0 },
+                { q: 'Du liest ___ Buch.', answers: ['ein', 'einen', 'eine', 'einem'], correct: 0 },
+                { q: 'Sie trinkt ___ Kaffee.', answers: ['einen', 'eine', 'ein', 'einem'], correct: 0 },
+                { q: 'Ich sehe ___ Vögel.', answers: ['die', 'den', 'das', 'dem'], correct: 0 },
+                { q: 'Er hört ___ Musik.', answers: ['die', 'den', 'das', 'dem'], correct: 0 },
+                { q: 'Wir essen ___ Frühstück.', answers: ['das', 'den', 'die', 'dem'], correct: 0 },
+                { q: 'Du machst ___ Licht an.', answers: ['das', 'den', 'die', 'dem'], correct: 0 },
+                { q: 'Sie räumt ___ Balkon auf.', answers: ['den', 'die', 'das', 'dem'], correct: 0 },
+                { q: 'Ich pflanze ___ Kräuter.', answers: ['die', 'den', 'das', 'dem'], correct: 0 },
+                { q: 'Er nutzt ___ Grill.', answers: ['den', 'die', 'das', 'dem'], correct: 0 },
+                { q: 'Wir genießen ___ Wetter.', answers: ['das', 'den', 'die', 'dem'], correct: 0 },
+                { q: 'Du holst ___ Getränke.', answers: ['die', 'den', 'das', 'dem'], correct: 0 },
+                { q: 'Sie liebt ___ Aussicht.', answers: ['die', 'den', 'das', 'dem'], correct: 0 }
+            ],
+            flur: [
+                { q: 'Ich helfe ___ Nachbarn.', answers: ['dem', 'den', 'die', 'der'], correct: 0 },
+                { q: 'Er gibt ___ Frau die Schlüssel.', answers: ['der', 'den', 'dem', 'die'], correct: 0 },
+                { q: 'Wir danken ___ Mann.', answers: ['dem', 'den', 'der', 'die'], correct: 0 },
+                { q: 'Du gehörst ___ WG.', answers: ['der', 'dem', 'den', 'die'], correct: 0 },
+                { q: 'Sie schreibt ___ Vermieter.', answers: ['dem', 'den', 'der', 'die'], correct: 0 },
+                { q: 'Ich zeige ___ Gästen den Weg.', answers: ['den', 'dem', 'der', 'die'], correct: 0 },
+                { q: 'Er folgt ___ Postbote.', answers: ['dem', 'den', 'der', 'die'], correct: 0 },
+                { q: 'Wir begegnen ___ Nachbarin.', answers: ['der', 'dem', 'den', 'die'], correct: 0 },
+                { q: 'Du antwortest ___ Frage.', answers: ['der', 'dem', 'den', 'die'], correct: 0 },
+                { q: 'Sie vertraut ___ Mitbewohner.', answers: ['dem', 'den', 'der', 'die'], correct: 0 },
+                { q: 'Ich gratuliere ___ Kind.', answers: ['dem', 'den', 'der', 'die'], correct: 0 },
+                { q: 'Er gehört ___ Team.', answers: ['dem', 'den', 'der', 'die'], correct: 0 },
+                { q: 'Wir glauben ___ Geschichte.', answers: ['der', 'dem', 'den', 'die'], correct: 0 },
+                { q: 'Du schmeckst ___ Essen gut.', answers: ['dem', 'den', 'der', 'die'], correct: 0 },
+                { q: 'Sie passt ___ Baby auf.', answers: ['dem', 'den', 'der', 'die'], correct: 0 },
+                { q: 'Ich fehlt ___ Energie.', answers: ['die', 'der', 'dem', 'den'], correct: 0 },
+                { q: 'Er schadet ___ Umwelt.', answers: ['der', 'dem', 'den', 'die'], correct: 0 },
+                { q: 'Wir widersprechen ___ Plan.', answers: ['dem', 'den', 'der', 'die'], correct: 0 },
+                { q: 'Du nützt ___ Gemeinschaft.', answers: ['der', 'dem', 'den', 'die'], correct: 0 },
+                { q: 'Sie gefällt ___ Leuten.', answers: ['den', 'dem', 'der', 'die'], correct: 0 }
+            ],
+            keller: [
+                { q: 'Ich ___ gestern im Keller.', answers: ['war', 'warst', 'waren', 'wart'], correct: 0 },
+                { q: 'Er ___ die Kisten.', answers: ['trug', 'trugst', 'trugen', 'trugt'], correct: 0 },
+                { q: 'Wir ___ alte Sachen.', answers: ['fanden', 'fand', 'fandst', 'fandet'], correct: 0 },
+                { q: 'Du ___ den Schlüssel.', answers: ['suchtest', 'suchte', 'suchten', 'suchtet'], correct: 0 },
+                { q: 'Sie ___ das Licht an.', answers: ['machte', 'machtest', 'machten', 'machtet'], correct: 0 },
+                { q: 'Ich ___ viel Staub.', answers: ['sah', 'sahst', 'sahen', 'saht'], correct: 0 },
+                { q: 'Er ___ die Treppe runter.', answers: ['ging', 'gingst', 'gingen', 'gingt'], correct: 0 },
+                { q: 'Wir ___ neue Regale.', answers: ['stellten', 'stellte', 'stelltest', 'stelltet'], correct: 0 },
+                { q: 'Du ___ beim Putzen.', answers: ['halfst', 'half', 'halfen', 'halft'], correct: 0 },
+                { q: 'Sie ___ alles auf.', answers: ['räumte', 'räumtest', 'räumten', 'räumtet'], correct: 0 },
+                { q: 'Ich ___ den Karton.', answers: ['öffnete', 'öffnetest', 'öffneten', 'öffnetet'], correct: 0 },
+                { q: 'Er ___ ein Fahrrad.', answers: ['hatte', 'hattest', 'hatten', 'hattet'], correct: 0 },
+                { q: 'Wir ___ im Keller.', answers: ['arbeiteten', 'arbeitete', 'arbeitetest', 'arbeitetet'], correct: 0 },
+                { q: 'Du ___ Musik.', answers: ['hörtest', 'hörte', 'hörten', 'hörtet'], correct: 0 },
+                { q: 'Sie ___ die Tür.', answers: ['schloss', 'schlossest', 'schlossen', 'schlosst'], correct: 0 },
+                { q: 'Ich ___ müde.', answers: ['wurde', 'wurdest', 'wurden', 'wurdet'], correct: 0 },
+                { q: 'Er ___ Werkzeug.', answers: ['brachte', 'brachtest', 'brachten', 'brachtet'], correct: 0 },
+                { q: 'Wir ___ lange.', answers: ['blieben', 'blieb', 'bliebst', 'bliebt'], correct: 0 },
+                { q: 'Du ___ den Boden.', answers: ['wischtest', 'wischte', 'wischten', 'wischtet'], correct: 0 },
+                { q: 'Sie ___ nach Hause.', answers: ['fuhr', 'fuhrst', 'fuhren', 'fuhrt'], correct: 0 }
+            ],
+            garten: [
+                { q: 'Die Katze liegt ___ dem Baum.', answers: ['unter', 'über', 'neben', 'zwischen'], correct: 0 },
+                { q: 'Ich stelle den Stuhl ___ den Tisch.', answers: ['an', 'auf', 'in', 'über'], correct: 0 },
+                { q: 'Der Ball rollt ___ den Garten.', answers: ['in', 'an', 'auf', 'über'], correct: 0 },
+                { q: 'Du sitzt ___ dem Gras.', answers: ['auf', 'in', 'an', 'über'], correct: 0 },
+                { q: 'Die Blumen stehen ___ der Vase.', answers: ['in', 'auf', 'an', 'über'], correct: 0 },
+                { q: 'Er hängt das Bild ___ die Wand.', answers: ['an', 'auf', 'in', 'über'], correct: 0 },
+                { q: 'Wir gehen ___ den Park.', answers: ['in', 'an', 'auf', 'über'], correct: 0 },
+                { q: 'Das Kind spielt ___ dem Baum.', answers: ['neben', 'über', 'unter', 'zwischen'], correct: 0 },
+                { q: 'Sie legt die Decke ___ den Boden.', answers: ['auf', 'in', 'an', 'über'], correct: 0 },
+                { q: 'Ich gehe ___ die Straße.', answers: ['über', 'auf', 'in', 'an'], correct: 0 },
+                { q: 'Der Hund läuft ___ den Zaun.', answers: ['hinter', 'über', 'unter', 'neben'], correct: 0 },
+                { q: 'Du stellst die Leiter ___ das Haus.', answers: ['an', 'auf', 'in', 'über'], correct: 0 },
+                { q: 'Die Lampe hängt ___ dem Tisch.', answers: ['über', 'auf', 'in', 'an'], correct: 0 },
+                { q: 'Er legt das Buch ___ den Schrank.', answers: ['in', 'auf', 'an', 'über'], correct: 0 },
+                { q: 'Wir sitzen ___ der Bank.', answers: ['auf', 'in', 'an', 'über'], correct: 0 },
+                { q: 'Das Auto parkt ___ dem Haus.', answers: ['vor', 'über', 'unter', 'in'], correct: 0 },
+                { q: 'Sie stellt die Pflanze ___ das Fenster.', answers: ['vor', 'über', 'unter', 'zwischen'], correct: 0 },
+                { q: 'Ich laufe ___ den Garten.', answers: ['durch', 'über', 'unter', 'neben'], correct: 0 },
+                { q: 'Der Vogel fliegt ___ das Haus.', answers: ['über', 'auf', 'in', 'an'], correct: 0 },
+                { q: 'Du gehst ___ mir und Tom.', answers: ['zwischen', 'über', 'unter', 'neben'], correct: 0 }
+            ],
+            garage: [
+                { q: '___ die Tür!', answers: ['Öffne', 'Öffnen Sie', 'Öffnet', 'Öffnest'], correct: 0 },
+                { q: '___ vorsichtig!', answers: ['Fahr', 'Fahren Sie', 'Fahrt', 'Fährst'], correct: 0 },
+                { q: '___ das Auto!', answers: ['Wasch', 'Waschen Sie', 'Wascht', 'Wäschst'], correct: 0 },
+                { q: '___ hier! (Sie)', answers: ['Parken Sie', 'Park', 'Parkt', 'Parkst'], correct: 0 },
+                { q: '___ leise! (ihr)', answers: ['Seid', 'Sei', 'Sind Sie', 'Bist'], correct: 0 },
+                { q: '___ den Motor!', answers: ['Starte', 'Starten Sie', 'Startet', 'Startest'], correct: 0 },
+                { q: '___ das Licht an!', answers: ['Mach', 'Machen Sie', 'Macht', 'Machst'], correct: 0 },
+                { q: '___ die Werkzeuge! (Sie)', answers: ['Holen Sie', 'Hol', 'Holt', 'Holst'], correct: 0 },
+                { q: '___ pünktlich! (ihr)', answers: ['Kommt', 'Komm', 'Kommen Sie', 'Kommst'], correct: 0 },
+                { q: '___ den Schlüssel!', answers: ['Nimm', 'Nehmen Sie', 'Nehmt', 'Nimmst'], correct: 0 },
+                { q: '___ langsam!', answers: ['Fahr', 'Fahren Sie', 'Fahrt', 'Fährst'], correct: 0 },
+                { q: '___ die Tür zu! (Sie)', answers: ['Schließen Sie', 'Schließ', 'Schließt', 'Schließt'], correct: 0 },
+                { q: '___ den Reifen!', answers: ['Check', 'Checken Sie', 'Checkt', 'Checkst'], correct: 0 },
+                { q: '___ Öl nach!', answers: ['Füll', 'Füllen Sie', 'Füllt', 'Füllst'], correct: 0 },
+                { q: '___ den Motor! (Sie)', answers: ['Prüfen Sie', 'Prüf', 'Prüft', 'Prüfst'], correct: 0 },
+                { q: '___ aufmerksam! (ihr)', answers: ['Seid', 'Sei', 'Sind Sie', 'Bist'], correct: 0 },
+                { q: '___ die Handbremse!', answers: ['Zieh', 'Ziehen Sie', 'Zieht', 'Ziehst'], correct: 0 },
+                { q: '___ rückwärts ein!', answers: ['Fahr', 'Fahren Sie', 'Fahrt', 'Fährst'], correct: 0 },
+                { q: '___ den Gurt an! (Sie)', answers: ['Schnallen Sie', 'Schnall', 'Schnallt', 'Schnallst'], correct: 0 },
+                { q: '___ geduldig!', answers: ['Sei', 'Sind Sie', 'Seid', 'Bist'], correct: 0 }
+            ],
+            dachboden: [
+                { q: 'Ich bleibe zu Hause, ___ es regnet.', answers: ['weil', 'dass', 'wenn', 'ob'], correct: 0 },
+                { q: 'Er sagt, ___ er müde ist.', answers: ['dass', 'weil', 'wenn', 'ob'], correct: 0 },
+                { q: '___ du Zeit hast, komm vorbei!', answers: ['Wenn', 'Weil', 'Dass', 'Ob'], correct: 0 },
+                { q: 'Ich weiß nicht, ___ er kommt.', answers: ['ob', 'dass', 'weil', 'wenn'], correct: 0 },
+                { q: 'Sie lernt Deutsch, ___ sie arbeiten will.', answers: ['weil', 'dass', 'wenn', 'ob'], correct: 0 },
+                { q: 'Ich hoffe, ___ das Wetter gut wird.', answers: ['dass', 'weil', 'wenn', 'ob'], correct: 0 },
+                { q: '___ ich Geld habe, reise ich.', answers: ['Wenn', 'Weil', 'Dass', 'Ob'], correct: 0 },
+                { q: 'Er fragt, ___ du mitkommen willst.', answers: ['ob', 'dass', 'weil', 'wenn'], correct: 0 },
+                { q: 'Wir kochen, ___ wir Hunger haben.', answers: ['weil', 'dass', 'wenn', 'ob'], correct: 0 },
+                { q: 'Ich glaube, ___ es klappt.', answers: ['dass', 'weil', 'wenn', 'ob'], correct: 0 },
+                { q: '___ es kalt ist, ziehe ich einen Mantel an.', answers: ['Wenn', 'Weil', 'Dass', 'Ob'], correct: 0 },
+                { q: 'Sie weiß nicht, ___ er die Wahrheit sagt.', answers: ['ob', 'dass', 'weil', 'wenn'], correct: 0 },
+                { q: 'Ich bin glücklich, ___ ich Freunde habe.', answers: ['weil', 'dass', 'wenn', 'ob'], correct: 0 },
+                { q: 'Er denkt, ___ er gewinnt.', answers: ['dass', 'weil', 'wenn', 'ob'], correct: 0 },
+                { q: '___ du fertig bist, gehen wir.', answers: ['Wenn', 'Weil', 'Dass', 'Ob'], correct: 0 },
+                { q: 'Ich frage mich, ___ das stimmt.', answers: ['ob', 'dass', 'weil', 'wenn'], correct: 0 },
+                { q: 'Sie ist traurig, ___ er nicht kommt.', answers: ['weil', 'dass', 'wenn', 'ob'], correct: 0 },
+                { q: 'Ich verspreche, ___ ich komme.', answers: ['dass', 'weil', 'wenn', 'ob'], correct: 0 },
+                { q: '___ ich kann, helfe ich dir.', answers: ['Wenn', 'Weil', 'Dass', 'Ob'], correct: 0 },
+                { q: 'Er überlegt, ___ er umzieht.', answers: ['ob', 'dass', 'weil', 'wenn'], correct: 0 }
+            ]
+        };
+
+        // Generate Game Code
+        function generateGameCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 4; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        // Show Screen
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Select Mode
+        function selectMode(mode) {
+            gameMode = mode;
+            if (mode === 'host') {
+                showRoomSelection();
+                showScreen('hostSetupScreen');
+            } else {
+                showScreen('playerJoinScreen');
+            }
+        }
+
+        // Show Room Selection
+        function showRoomSelection() {
+            const container = document.getElementById('roomSelectionHost');
+            container.innerHTML = '';
+            
+            rooms.forEach(room => {
+                const card = document.createElement('div');
+                card.className = 'room-card';
+                card.innerHTML = `
+                    <div class="room-icon">${room.icon}</div>
+                    <div class="room-name">${room.name}</div>
+                    <div class="room-theme">${room.theme}</div>
+                `;
+                card.onclick = () => selectRoom(room.id, card);
+                container.appendChild(card);
+            });
+        }
+
+        // Select Room
+        function selectRoom(roomId, cardElement) {
+            selectedRoom = roomId;
+            document.querySelectorAll('.room-card').forEach(c => c.classList.remove('selected'));
+            cardElement.classList.add('selected');
+        }
+
+        // Create Game
+        function createGame() {
+            if (!selectedRoom) {
+                alert('Bitte wähle einen Raum!');
+                return;
+            }
+
+            gameCode = generateGameCode();
+            const questions = questionsDB[selectedRoom];
+            
+            database.ref('games/' + gameCode).set({
+                status: 'waiting',
+                room: selectedRoom,
+                currentQuestion: 0,
+                questions: questions,
+                host: true,
+                createdAt: Date.now()
+            });
+
+            document.getElementById('gameCodeDisplay').textContent = gameCode;
+            listenToPlayers();
+            showScreen('hostLobbyScreen');
+        }
+
+        // Listen to Players
+        function listenToPlayers() {
+            database.ref('games/' + gameCode + '/players').on('value', (snapshot) => {
+                const players = snapshot.val() || {};
+                updatePlayersList(players, 'playersList');
+                
+                if (gameMode === 'player') {
+                    updatePlayersList(players, 'playersListPlayer');
+                }
+            });
+        }
+
+        // Update Players List
+        function updatePlayersList(players, elementId) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = '';
+            
+            Object.entries(players).forEach(([id, player]) => {
+                const item = document.createElement('div');
+                item.className = 'player-item';
+                item.innerHTML = `
+                    <div class="player-name">${player.name}</div>
+                    <div class="player-score">${player.score || 0} Punkte</div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Join Game
+        function joinGame() {
+            const name = document.getElementById('playerName').value.trim();
+            const code = document.getElementById('gameCodeInput').value.toUpperCase().trim();
+            
+            if (!name) {
+                showError('Bitte gib deinen Namen ein!');
+                return;
+            }
+            
+            if (code.length !== 4) {
+                showError('Der Code muss 4 Zeichen haben!');
+                return;
+            }
+
+            database.ref('games/' + code).once('value').then((snapshot) => {
+                if (!snapshot.exists()) {
+                    showError('Spiel nicht gefunden! Prüfe den Code.');
+                    return;
+                }
+
+                const game = snapshot.val();
+                if (game.status !== 'waiting') {
+                    showError('Das Spiel hat bereits begonnen!');
+                    return;
+                }
+
+                gameCode = code;
+                playerName = name;
+                playerId = 'player_' + Date.now();
+
+                database.ref('games/' + gameCode + '/players/' + playerId).set({
+                    name: playerName,
+                    score: 0,
+                    joinedAt: Date.now()
+                });
+
+                document.getElementById('playerGameCode').textContent = gameCode;
+                listenToPlayers();
+                listenToGameStatus();
+                showScreen('playerWaitingScreen');
+            });
+        }
+
+        // Show Error
+        function showError(message) {
+            const errorDiv = document.getElementById('joinError');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Start Quiz
+        function startQuiz() {
+            database.ref('games/' + gameCode).update({
+                status: 'playing',
+                currentQuestion: 0,
+                startedAt: Date.now()
+            });
+
+            currentQuestionIndex = 0;
+            showQuestionHost();
+            showScreen('quizScreenHost');
+        }
+
+        // Listen to Game Status
+        function listenToGameStatus() {
+            database.ref('games/' + gameCode).on('value', (snapshot) => {
+                const game = snapshot.val();
+                if (!game) return;
+
+                if (game.status === 'playing' && gameMode === 'player') {
+                    showQuestionPlayer(game);
+                } else if (game.status === 'finished') {
+                    showResults();
+                }
+            });
+        }
+
+        // Show Question (Host)
+        function showQuestionHost() {
+            database.ref('games/' + gameCode + '/questions').once('value').then((snapshot) => {
+                const questions = snapshot.val();
+                if (!questions || currentQuestionIndex >= questions.length) {
+                    endGame();
+                    return;
+                }
+
+                const question = questions[currentQuestionIndex];
+                document.getElementById('questionNumberHost').textContent = `Frage ${currentQuestionIndex + 1}/${questions.length}`;
+                document.getElementById('questionTextHost').textContent = question.q;
+
+                const answersGrid = document.getElementById('answersGridHost');
+                answersGrid.innerHTML = '';
+                
+                question.answers.forEach((answer, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'answer-btn';
+                    btn.textContent = answer;
+                    btn.onclick = () => {};
+                    answersGrid.appendChild(btn);
+                });
+
+                startTimer();
+                updateLiveLeaderboard();
+            });
+        }
+
+        // Show Question (Player)
+        function showQuestionPlayer(game) {
+            if (game.currentQuestion !== currentQuestionIndex) {
+                currentQuestionIndex = game.currentQuestion;
+                hasAnswered = false;
+                
+                const questions = game.questions;
+                const question = questions[currentQuestionIndex];
+                
+                document.getElementById('questionNumberPlayer').textContent = `Frage ${currentQuestionIndex + 1}/${questions.length}`;
+                document.getElementById('questionTextPlayer').textContent = question.q;
+                document.getElementById('feedbackMessage').textContent = '';
+
+                const answersGrid = document.getElementById('answersGridPlayer');
+                answersGrid.innerHTML = '';
+                
+                question.answers.forEach((answer, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'answer-btn';
+                    btn.textContent = answer;
+                    btn.onclick = () => submitAnswer(index, question.correct);
+                    answersGrid.appendChild(btn);
+                });
+
+                showScreen('quizScreenPlayer');
+                startTimerPlayer();
+            }
+        }
+
+        // Submit Answer
+        function submitAnswer(answerIndex, correctIndex) {
+            if (hasAnswered) return;
+            hasAnswered = true;
+
+            const buttons = document.querySelectorAll('#answersGridPlayer .answer-btn');
+            buttons.forEach(btn => btn.onclick = null);
+
+            const isCorrect = answerIndex === correctIndex;
+            
+            buttons[answerIndex].classList.add('selected');
+            
+            setTimeout(() => {
+                buttons[correctIndex].classList.add('correct');
+                if (!isCorrect) {
+                    buttons[answerIndex].classList.add('wrong');
+                }
+
+                if (isCorrect) {
+                    const points = Math.max(100, 1000 - (10 - timeLeft) * 100);
+                    playerScore += points;
+                    document.getElementById('feedbackMessage').innerHTML = `✅ Richtig! +${points} Punkte`;
+                    document.getElementById('feedbackMessage').style.color = '#06D6A0';
+                } else {
+                    document.getElementById('feedbackMessage').innerHTML = `❌ Falsch!`;
+                    document.getElementById('feedbackMessage').style.color = '#E63946';
+                }
+
+                database.ref('games/' + gameCode + '/players/' + playerId).update({
+                    score: playerScore
+                });
+            }, 300);
+        }
+
+        // Start Timer
+        function startTimer() {
+            timeLeft = 10;
+            document.getElementById('timerHost').textContent = timeLeft;
+            
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timerHost').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    showNextButton();
+                }
+            }, 1000);
+        }
+
+        // Start Timer (Player)
+        function startTimerPlayer() {
+            timeLeft = 10;
+            document.getElementById('timerPlayer').textContent = timeLeft;
+            
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timerPlayer').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                }
+            }, 1000);
+        }
+
+        // Show Next Button
+        function showNextButton() {
+            database.ref('games/' + gameCode + '/questions').once('value').then((snapshot) => {
+                const questions = snapshot.val();
+                if (currentQuestionIndex < questions.length - 1) {
+                    document.getElementById('nextQuestionBtn').style.display = 'inline-block';
+                } else {
+                    document.getElementById('endGameBtn').style.display = 'inline-block';
+                }
+            });
+        }
+
+        // Next Question
+        function nextQuestion() {
+            currentQuestionIndex++;
+            document.getElementById('nextQuestionBtn').style.display = 'none';
+            
+            database.ref('games/' + gameCode).update({
+                currentQuestion: currentQuestionIndex
+            });
+            
+            showQuestionHost();
+        }
+
+        // Update Live Leaderboard
+        function updateLiveLeaderboard() {
+            database.ref('games/' + gameCode + '/players').once('value').then((snapshot) => {
+                const players = snapshot.val() || {};
+                const sorted = Object.entries(players)
+                    .sort((a, b) => (b[1].score || 0) - (a[1].score || 0));
+                
+                const container = document.getElementById('liveLeaderboard');
+                container.innerHTML = '';
+                
+                sorted.forEach(([id, player], index) => {
+                    const item = document.createElement('div');
+                    item.className = `leaderboard-item rank-${index + 1}`;
+                    
+                    const medals = ['🥇', '🥈', '🥉'];
+                    const badge = index < 3 ? medals[index] : `${index + 1}.`;
+                    
+                    item.innerHTML = `
+                        <div class="rank-badge">${badge}</div>
+                        <div class="player-info">
+                            <div class="player-name">${player.name}</div>
+                        </div>
+                        <div class="player-score-big">${player.score || 0}</div>
+                    `;
+                    container.appendChild(item);
+                });
+            });
+        }
+
+        // End Game
+        function endGame() {
+            clearInterval(timerInterval);
+            database.ref('games/' + gameCode).update({
+                status: 'finished',
+                finishedAt: Date.now()
+            });
+            showResults();
+        }
+
+        // Show Results
+        function showResults() {
+            database.ref('games/' + gameCode + '/players').once('value').then((snapshot) => {
+                const players = snapshot.val() || {};
+                const sorted = Object.entries(players)
+                    .sort((a, b) => (b[1].score || 0) - (a[1].score || 0));
+                
+                const container = document.getElementById('finalLeaderboard');
+                container.innerHTML = '';
+                
+                sorted.forEach(([id, player], index) => {
+                    const item = document.createElement('div');
+                    item.className = `leaderboard-item rank-${index + 1}`;
+                    
+                    const medals = ['🥇', '🥈', '🥉'];
+                    const badge = index < 3 ? medals[index] : `${index + 1}.`;
+                    
+                    item.innerHTML = `
+                        <div class="rank-badge">${badge}</div>
+                        <div class="player-info">
+                            <div class="player-name">${player.name}</div>
+                        </div>
+                        <div class="player-score-big">${player.score || 0}</div>
+                    `;
+                    container.appendChild(item);
+                });
+                
+                showScreen('resultsScreen');
+            });
+        }
+
+        // Cancel Game
+        function cancelGame() {
+            if (confirm('Möchtest du das Spiel wirklich abbrechen?')) {
+                database.ref('games/' + gameCode).remove();
+                location.reload();
+            }
+        }
+
+        // Back to Start
+        function backToStart() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>
