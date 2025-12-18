@@ -7,31 +7,32 @@
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);min-height:100vh;color:#fff;padding:20px}
-        .container{max-width:1000px;margin:0 auto}
+        .container{max-width:1200px;margin:0 auto}
         header{text-align:center;margin-bottom:40px;padding:30px 20px}
         h1{font-size:2.5em;margin-bottom:10px;background:linear-gradient(135deg,#ffd700,#ff8c00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
         .subtitle{font-size:1.1em;opacity:0.8;margin-bottom:20px}
         .features{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:20px}
         .feature{background:rgba(255,255,255,0.1);padding:10px 20px;border-radius:25px;font-size:0.9em}
         .feature span{margin-right:5px}
-        .games-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-bottom:40px}
-        .game-card{background:rgba(255,255,255,0.05);border-radius:20px;padding:25px;border:2px solid rgba(255,255,255,0.1);transition:all 0.3s;cursor:pointer;text-decoration:none;color:#fff;display:block}
+        .games-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:40px}
+        .game-card{background:rgba(255,255,255,0.05);border-radius:20px;padding:20px;border:2px solid rgba(255,255,255,0.1);transition:all 0.3s;cursor:pointer;text-decoration:none;color:#fff;display:block;position:relative}
         .game-card:hover{transform:translateY(-5px);border-color:rgba(255,215,0,0.5);background:rgba(255,255,255,0.08)}
-        .game-icon{font-size:3em;margin-bottom:15px}
-        .game-title{font-size:1.3em;font-weight:700;margin-bottom:8px}
-        .game-desc{font-size:0.9em;opacity:0.7;margin-bottom:15px;line-height:1.5}
-        .game-meta{display:flex;gap:10px;flex-wrap:wrap}
-        .meta-tag{padding:5px 12px;border-radius:15px;font-size:0.8em;font-weight:600}
+        .game-card.new{border-color:rgba(46,204,113,0.5)}
+        .new-badge{position:absolute;top:-8px;right:15px;background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;padding:4px 12px;border-radius:12px;font-size:0.75em;font-weight:700;text-transform:uppercase}
+        .game-icon{font-size:2.5em;margin-bottom:12px}
+        .game-title{font-size:1.2em;font-weight:700;margin-bottom:6px}
+        .game-desc{font-size:0.85em;opacity:0.7;margin-bottom:12px;line-height:1.4}
+        .game-meta{display:flex;gap:8px;flex-wrap:wrap}
+        .meta-tag{padding:4px 10px;border-radius:12px;font-size:0.75em;font-weight:600}
         .meta-tag.time{background:rgba(52,152,219,0.3);color:#5dade2}
         .meta-tag.questions{background:rgba(46,204,113,0.3);color:#58d68d}
-        .meta-tag.mode{background:rgba(155,89,182,0.3);color:#bb8fce}
         .how-to{background:rgba(255,255,255,0.05);border-radius:20px;padding:30px;margin-bottom:30px}
         .how-to h2{font-size:1.5em;margin-bottom:20px;color:#ffd700}
-        .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
-        .step{text-align:center;padding:20px}
-        .step-icon{font-size:2.5em;margin-bottom:10px}
-        .step-title{font-weight:700;margin-bottom:5px}
-        .step-desc{font-size:0.85em;opacity:0.7}
+        .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px}
+        .step{text-align:center;padding:15px}
+        .step-icon{font-size:2em;margin-bottom:8px}
+        .step-title{font-weight:700;margin-bottom:5px;font-size:0.95em}
+        .step-desc{font-size:0.8em;opacity:0.7}
         footer{text-align:center;padding:20px;opacity:0.5;font-size:0.85em}
         @media(max-width:600px){
             h1{font-size:1.8em}
@@ -58,66 +59,116 @@
             <a href="grammatik-quiz.html" class="game-card">
                 <div class="game-icon">🎯</div>
                 <div class="game-title">Grammatik-Quiz</div>
-                <div class="game-desc">Allgemeine Grammatik: Präsens, Perfekt, Modalverben, Artikel, Dativ/Akkusativ und mehr.</div>
+                <div class="game-desc">Allgemeine Grammatik: Präsens, Perfekt, Modalverben, Artikel und mehr.</div>
                 <div class="game-meta">
-                    <span class="meta-tag time">⏱️ 12 Sek</span>
+                    <span class="meta-tag time">⏱️ 12s</span>
                     <span class="meta-tag questions">📝 20 Fragen</span>
-                    <span class="meta-tag mode">👤👥 Alle Modi</span>
                 </div>
             </a>
 
             <a href="konnektoren.html" class="game-card">
                 <div class="game-icon">⚡</div>
                 <div class="game-title">Konnektoren-Quiz</div>
-                <div class="game-desc">Schnelles Denken! weil, obwohl, deshalb, trotzdem, damit, sodass und mehr.</div>
+                <div class="game-desc">weil, obwohl, deshalb, trotzdem, damit, sodass und mehr.</div>
                 <div class="game-meta">
-                    <span class="meta-tag time">⏱️ 8 Sek</span>
+                    <span class="meta-tag time">⏱️ 8s</span>
                     <span class="meta-tag questions">📝 20 Fragen</span>
-                    <span class="meta-tag mode">👤👥 Alle Modi</span>
                 </div>
             </a>
 
             <a href="verben-praepositionen.html" class="game-card">
                 <div class="game-icon">🔗</div>
                 <div class="game-title">Verben + Präpositionen</div>
-                <div class="game-desc">Feste Verbindungen: warten auf, denken an, sich freuen über/auf...</div>
+                <div class="game-desc">warten auf, denken an, sich freuen über/auf...</div>
                 <div class="game-meta">
-                    <span class="meta-tag time">⏱️ 10 Sek</span>
+                    <span class="meta-tag time">⏱️ 10s</span>
                     <span class="meta-tag questions">📝 20 Fragen</span>
-                    <span class="meta-tag mode">👤👥 Alle Modi</span>
                 </div>
             </a>
 
             <a href="konjunktiv-ii.html" class="game-card">
                 <div class="game-icon">✨</div>
                 <div class="game-title">Konjunktiv II</div>
-                <div class="game-desc">würde, hätte, wäre, könnte, sollte, müsste - Wünsche, Höflichkeit, irreale Bedingungen.</div>
+                <div class="game-desc">würde, hätte, wäre, könnte, sollte, müsste</div>
                 <div class="game-meta">
-                    <span class="meta-tag time">⏱️ 12 Sek</span>
+                    <span class="meta-tag time">⏱️ 12s</span>
                     <span class="meta-tag questions">📝 20 Fragen</span>
-                    <span class="meta-tag mode">👤👥 Alle Modi</span>
                 </div>
             </a>
 
             <a href="akkusativ-dativ.html" class="game-card">
                 <div class="game-icon">🎁</div>
                 <div class="game-title">Akkusativ oder Dativ?</div>
-                <div class="game-desc">Verben mit zwei Objekten: geben, schenken, zeigen, erklären... WEM? oder WAS?</div>
+                <div class="game-desc">Verben mit zwei Objekten: geben, schenken, zeigen...</div>
                 <div class="game-meta">
-                    <span class="meta-tag time">⏱️ 12 Sek</span>
+                    <span class="meta-tag time">⏱️ 12s</span>
                     <span class="meta-tag questions">📝 20 Fragen</span>
-                    <span class="meta-tag mode">👤👥 Alle Modi</span>
                 </div>
             </a>
 
             <a href="adjektiv-endungen.html" class="game-card">
                 <div class="game-icon">🎨</div>
                 <div class="game-title">Adjektiv-Endungen</div>
-                <div class="game-desc">Die richtige Endung finden: -e, -er, -en, -es, -em nach bestimmten und unbestimmten Artikeln.</div>
+                <div class="game-desc">-e, -er, -en, -es, -em nach Artikeln</div>
                 <div class="game-meta">
-                    <span class="meta-tag time">⏱️ 10 Sek</span>
+                    <span class="meta-tag time">⏱️ 10s</span>
                     <span class="meta-tag questions">📝 20 Fragen</span>
-                    <span class="meta-tag mode">👤👥 Alle Modi</span>
+                </div>
+            </a>
+
+            <!-- 5 NEW GAMES -->
+            <a href="wechselpraepositionen.html" class="game-card new">
+                <span class="new-badge">NEU</span>
+                <div class="game-icon">🏰</div>
+                <div class="game-title">Wechselpräpositionen</div>
+                <div class="game-desc">Wo? Wohin? Dativ oder Akkusativ? in/auf/an/unter...</div>
+                <div class="game-meta">
+                    <span class="meta-tag time">⏱️ 12s</span>
+                    <span class="meta-tag questions">📝 20 Fragen</span>
+                </div>
+            </a>
+
+            <a href="reflexivverben.html" class="game-card new">
+                <span class="new-badge">NEU</span>
+                <div class="game-icon">🪞</div>
+                <div class="game-title">Reflexivverben</div>
+                <div class="game-desc">sich waschen, sich freuen, sich ärgern, mich/mir...</div>
+                <div class="game-meta">
+                    <span class="meta-tag time">⏱️ 10s</span>
+                    <span class="meta-tag questions">📝 20 Fragen</span>
+                </div>
+            </a>
+
+            <a href="komparativ-superlativ.html" class="game-card new">
+                <span class="new-badge">NEU</span>
+                <div class="game-icon">📊</div>
+                <div class="game-title">Komparativ & Superlativ</div>
+                <div class="game-desc">größer, am größten, besser, am besten, als/wie...</div>
+                <div class="game-meta">
+                    <span class="meta-tag time">⏱️ 10s</span>
+                    <span class="meta-tag questions">📝 20 Fragen</span>
+                </div>
+            </a>
+
+            <a href="relativsaetze.html" class="game-card new">
+                <span class="new-badge">NEU</span>
+                <div class="game-icon">🔗</div>
+                <div class="game-title">Relativsätze</div>
+                <div class="game-desc">der, die, das, den, dem, dessen, deren, was, wo...</div>
+                <div class="game-meta">
+                    <span class="meta-tag time">⏱️ 12s</span>
+                    <span class="meta-tag questions">📝 20 Fragen</span>
+                </div>
+            </a>
+
+            <a href="passiv.html" class="game-card new">
+                <span class="new-badge">NEU</span>
+                <div class="game-icon">🔄</div>
+                <div class="game-title">Passiv</div>
+                <div class="game-desc">werden + Partizip II, wurde, worden, von + Dativ</div>
+                <div class="game-meta">
+                    <span class="meta-tag time">⏱️ 12s</span>
+                    <span class="meta-tag questions">📝 20 Fragen</span>
                 </div>
             </a>
         </div>
@@ -128,22 +179,22 @@
                 <div class="step">
                     <div class="step-icon">👑</div>
                     <div class="step-title">Spiel erstellen</div>
-                    <div class="step-desc">Wähle Modus (Einzeln/Team), Schwierigkeit und erstelle ein Spiel.</div>
+                    <div class="step-desc">Modus & Schwierigkeit wählen</div>
                 </div>
                 <div class="step">
                     <div class="step-icon">🔢</div>
                     <div class="step-title">Code teilen</div>
-                    <div class="step-desc">Teile den 4-stelligen Code mit deinen Mitspielern.</div>
+                    <div class="step-desc">4-stelligen Code weitergeben</div>
                 </div>
                 <div class="step">
                     <div class="step-icon">🚪</div>
                     <div class="step-title">Beitreten</div>
-                    <div class="step-desc">Spieler geben den Code ein und wählen ggf. ihr Team.</div>
+                    <div class="step-desc">Code eingeben & Team wählen</div>
                 </div>
                 <div class="step">
                     <div class="step-icon">🎮</div>
                     <div class="step-title">Spielen!</div>
-                    <div class="step-desc">Der Host startet - schnell antworten bringt mehr Punkte!</div>
+                    <div class="step-desc">Schnell antworten = mehr Punkte</div>
                 </div>
             </div>
         </div>
